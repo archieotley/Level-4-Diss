@@ -50,7 +50,6 @@ ui <- fluidPage(
            
           
           actionButton("go", "Go"),
-          #Button not coded yet
           
           selectInput("ach1", "Ventilation:",
                       c("Good" = "AchGD",
@@ -175,15 +174,15 @@ ui <- fluidPage(
     # )
 )
 
-NM1=1
-NM2=2
-NM3=3
-NM4=4
-NM5=5
-NM6=6
-NM7=7
-NM8=8
-NM9=9
+#NM1=1
+#NM2=2
+#NM3=3
+#NM4=4
+#NM5=5
+#NM6=6
+#NM7=7
+#NM8=8
+#NM9=9 ## adds in a number value off patient that are after the infectious person
 
 # Define server logic required to draw a histogram
 server <- function(input, output)
@@ -219,6 +218,7 @@ server <- function(input, output)
       list(dC)
     })
   }
+
   # numerical ode calc, dont need to run^^
   # AGO - dont fully understand this bit^^
   # AGO - think is adding in probability of infection for person, depending on variation in breathing rate, dont understand where random l/min comes from
