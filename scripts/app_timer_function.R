@@ -27,13 +27,19 @@ library(shinythemes)
 # Define UI for application that draws a histogram
 ui <- fluidPage(
   
-  # navbarPage("NCAA Swimming", theme = shinytheme("lumen"),
-  #            #theme = shinytheme("cerulean"),
-  #            tabPanel("Program Finder", fluid = TRUE, icon = icon("globe-americas"),
-  #                     tags$style(button_color_css),
-  #                     # Sidebar layout with a input and output definitions
-  #                     sidebarLayout(
-  #                       sidebarPanel(
+#  navbarPage(
+ #   "Shinny Page",
+    
+ #   tabPanel("Main Tab",
+ #            sidebarPanel("This is the side"),
+   #          mainPanel("This is the Main")
+    #),
+    
+    
+  #  tabPanel("Tab2","In Progress")
+ # )
+
+
   
   
   #shinythemes::themeSelector(),

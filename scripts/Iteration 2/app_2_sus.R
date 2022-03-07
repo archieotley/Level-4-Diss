@@ -34,11 +34,11 @@ ui <- fluidPage(
   #                     # Sidebar layout with a input and output definitions
   #                     sidebarLayout(
   #                       sidebarPanel(
-                          
-                        
+  
+  
   #shinythemes::themeSelector(),
-    # Application title
-    titlePanel("P. aeruginosa risk dashboard"),
+  # Application title
+  titlePanel("P. aeruginosa risk dashboard"),
   fluidRow(
     HTML(paste0(
       "<p><a href='https://hecoira.leeds.ac.uk'>HECOIRA</a> is an EPSRC funded project which aims to estimate exposure to microorganisms in hospital patient rooms.</p>",
@@ -48,56 +48,13 @@ ui <- fluidPage(
     
     column(3,
            
-          
-          actionButton("go", "Go"),
-          #Button not coded yet
-          
-          checkboxGroupInput('Mit', 'Mitigations:', c('Window Open', 'Air Cleaner', 'Door Open'), 
-                             selected = c(1)),
-          
-          selectInput("ach1", "Ventilation:",
-                      c("Good" = "AchGD",
-                        "Average" = "AchAVG",
-                        "Poor" = "AchPR")),
-          
-          selectInput("NM", "Number of people after infectious person:",
-                      c("1" = "NM1",
-                         "2" = "NM2",
-                         "3" = "NM3",
-                         "4" = "NM4",
-                         "5" = "NM5",
-                         "6" = "NM6",
-                         "7" = "NM7",
-                        "8" = "NM8",
-                        "9" = "NM9"
-                      )),
-         
-          selectInput("Rm", "Room:",
-                      c("1" = "Room1",
-                        "2" = "Room2",
-                        "3" = "Room3",
-                        "4" = "Room4",
-                        "5" = "Room5",
-                        "6" = "Room6",
-                        "7" = "Room7"
-                        )),
-          
-          selectInput("Bug", "Pathogen Type:",
-                     c("Covid" = "CV",
-                       "Influenza" = "IN",
-                       "TB" = "TB",
-                       "Pseudomonas" = "PS",
-                       "Capacia" = "CP"
-                       )),
-          
-          selectInput("Factor", "Any evidence that the patient was contagious?:",
-                      c("Yes" = "Factor1",
-                        "No" = "Factor2"
-                      )),
-          
-          sliderInput("times", label = "Appointment time (mins):",
-                      min = 30, max = 360, value = 180, step = 30),
-          
+           
+           actionButton("go", "Go"),
+           #Button not coded yet
+           
+           sliderInput("times", label = "Appointment time (mins):",
+                       min = 30, max = 360, value = 180, step = 30),
+           
            sliderInput("ach", label = "Air change rate:",
                        min = 0.2, max = 6, value = 2.3, step = .2),
            
@@ -105,22 +62,69 @@ ui <- fluidPage(
                        min = 1e-4, max = 5e-4, value = 0.000105, step = 1e-4),
            
            sliderInput("half_life", label = "Pathogen Half life (mins):",
-                      min = 10, max = 500, value = 250, step = 10),
-          # will probs need a uniform Dist function slider as well
-          
-          sliderInput("lambda_d", label = "Pathogen Deposition Rate:",
-                  min = 0, max = 10, value = 6, step = 2),
-          # need to look up what suitable deposition rate is
-          # will probs need a uniform Dist function slider as well
-          
-           sliderInput("Person", label = "Infected person position:",
-                    min = 0, max = 10, value = 5, step = 1),
-          
-          # do I need a slider for E for source?
+                       min = 10, max = 500, value = 250, step = 10),
            
            sliderInput("delay", label = "Time between appointments (mins):",
                        min = 10, max = 60, value = 30, step = 10),
-           img(src = "UOL_logo.png", height = 80, width = 200)
+           
+           # checkboxGroupInput('Mit', 'Mitigations:', c('Window Open', 'Air Cleaner', 'Door Open'), 
+           #     selected = c(1)),
+           
+           # selectInput("ach1", "Ventilation:",
+           # c("Good" = "AchGD",
+           #  "Average" = "AchAVG",
+           #  "Poor" = "AchPR")),
+           
+           #   selectInput("NM", "Number of people after infectious person:",
+           #             c("1" = "NM1",
+           #              "2" = "NM2",
+           #             "3" = "NM3",
+           #            "4" = "NM4",
+           #           "5" = "NM5",
+           #          "6" = "NM6",
+           #         "7" = "NM7",
+           #        "8" = "NM8",
+           #       "9" = "NM9"
+           #    )),
+           
+           #   selectInput("Rm", "Room:",
+           #              c("1" = "Room1",
+           #               "2" = "Room2",
+           #              "3" = "Room3",
+           #             "4" = "Room4",
+           #            "5" = "Room5",
+           #           "6" = "Room6",
+           #          "7" = "Room7"
+           #       )),
+           
+           #  selectInput("Bug", "Pathogen Type:",
+           #             c("Covid" = "CV",
+           #              "Influenza" = "IN",
+           #             "TB" = "TB",
+           #            "Pseudomonas" = "PS",
+           #           "Capacia" = "CP"
+           #        )),
+           
+           #    selectInput("Factor", "Any evidence that the patient was contagious?:",
+           #               c("Yes" = "Factor1",
+           #                "No" = "Factor2"
+           #             )),
+           
+           
+           # will probs need a uniform Dist function slider as well
+           
+           #   sliderInput("lambda_d", label = "Pathogen Deposition Rate:",
+           #              min = 0, max = 10, value = 6, step = 2),
+           # need to look up what suitable deposition rate is
+           # will probs need a uniform Dist function slider as well
+           
+           #   sliderInput("Person", label = "Infected person position:",
+           #              min = 0, max = 10, value = 5, step = 1),
+           
+           # do I need a slider for E for source?
+           
+           
+           #   img(src = "UOL_logo.png", height = 80, width = 200)
     ),
     
     # AGO slider i have added in do not do anything atm 26/01
@@ -133,7 +137,7 @@ ui <- fluidPage(
            # h3("Dose inhaled by patient 3 [cfu] "),
            # DT::dataTableOutput("Dose")
            
-                               
+           
     ),
     column(4,
            h3(" Risk per 100 patients"),
@@ -141,47 +145,47 @@ ui <- fluidPage(
            
     )
     
-    )
+  )
   
-
   
-    # sidebarLayout(
-    #     sidebarPanel(
-    #         # sliderInput("bins",
-    #         #             "Number of bins:",
-    #         #             min = 1,
-    #         #             max = 50,
-    #         #             value = 30),
-    #         
-    #         sliderInput("ach", label = "Air change rage:",
-    #                     min = 0.2, max = 6, value = 2.3, step = .2),
-    #         
-    #         sliderInput("k", label = "Dose response (1/k):",
-    #                     min = 1e-4, max = 5e-4, value = 0.000105, step = 1e-4),
-    #         
-    #         sliderInput("times", label = "Appointment time (mins):",
-    #                     min = 30, max = 360, value = 180, step = 30),
-    #         
-    #         sliderInput("delay", label = "Time between appointments (mins):",
-    #                     min = 10, max = 60, value = 30, step = 10)
-    #     ),
-    # 
-    #     # Show a plot of the generated distribution
-    #     mainPanel(
-    #        #plotOutput("distPlot"),
-    #        plotOutput("violinPlot"),
-    #        h3("Risk of infection to patient 3 [0-1]"),
-    #        DT::dataTableOutput("Risk")
-    #        #DT::dataTableOutput("mytable")
-    #        
-    #     )
-    # )
+  
+  # sidebarLayout(
+  #     sidebarPanel(
+  #         # sliderInput("bins",
+  #         #             "Number of bins:",
+  #         #             min = 1,
+  #         #             max = 50,
+  #         #             value = 30),
+  #         
+  #         sliderInput("ach", label = "Air change rage:",
+  #                     min = 0.2, max = 6, value = 2.3, step = .2),
+  #         
+  #         sliderInput("k", label = "Dose response (1/k):",
+  #                     min = 1e-4, max = 5e-4, value = 0.000105, step = 1e-4),
+  #         
+  #         sliderInput("times", label = "Appointment time (mins):",
+  #                     min = 30, max = 360, value = 180, step = 30),
+  #         
+  #         sliderInput("delay", label = "Time between appointments (mins):",
+  #                     min = 10, max = 60, value = 30, step = 10)
+  #     ),
+  # 
+  #     # Show a plot of the generated distribution
+  #     mainPanel(
+  #        #plotOutput("distPlot"),
+  #        plotOutput("violinPlot"),
+  #        h3("Risk of infection to patient 3 [0-1]"),
+  #        DT::dataTableOutput("Risk")
+  #        #DT::dataTableOutput("mytable")
+  #        
+  #     )
+  # )
 )
 
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
-
+  
   m<-1.52365; s<-1.151533
   # Breathing rate
   #p is in l/min
@@ -307,44 +311,28 @@ server <- function(input, output) {
     #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
     
     analyticalODE(times,0,V,lambda,out2$C[NROW(out2)])-> out3
-    
-    #AGO##################################### Part 4 susceptible patient enters room and breaths in CFU
-    
-    #Intial conditions
-    #E0=0
-    t04=tend3
-    tend4= tend3 +as.numeric(input$times)*60 #X * 60 X is time in mins
-    #tspan2=[t02 tend2]
-    times <- seq(t04, tend4, by = 1)
-    #C02=C1(end)    #takes the last concentration value form simulation 1
-    #E0=0           #emission now 0
-    
-    parameters<-c(0,V,lambda)
-    init<-c(C=out3$C[NROW(out3)])
-    #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
-    
-    analyticalODE(times,0,V,lambda,out3$C[NROW(out3)])-> out4
+  
     
     #AGO#########################################################################
     
     #for the AUC function
     #Inhaled particles
-   #AGO tmp<-
+    #AGO tmp<-
     #  AGOout3%>%
-     #AGO summarise(dose=AUC(times,C*p))%>%
-      #AGO mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
+    #AGO summarise(dose=AUC(times,C*p))%>%
+    #AGO mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
     
     #AGOn_result<-data.frame(C1=out1$C[NROW(out1)],
-      # AGO                  C3=out3$C[NROW(out3)],
-     #  AGO                  C2=out2$C[NROW(out2)],
-       #   AGO               dose=tmp$dose,
-        #     AGO            risk=tmp$risk
+    # AGO                  C3=out3$C[NROW(out3)],
+    #  AGO                  C2=out2$C[NROW(out2)],
+    #   AGO               dose=tmp$dose,
+    #     AGO            risk=tmp$risk
     #AGO)
     #AGOreturn(n_result)
     
     tmp<-
-      out4%>%
+      out3%>%
       summarise(dose=AUC(times,C*p))%>%
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
@@ -352,7 +340,6 @@ server <- function(input, output) {
     n_result<-data.frame(C1=out1$C[NROW(out1)],
                          C2=out2$C[NROW(out2)],
                          C3=out3$C[NROW(out3)],
-                         C4=out4$C[NROW(out4)],
                          dose=tmp$dose,
                          risk=tmp$risk
     )
@@ -362,16 +349,16 @@ server <- function(input, output) {
     
   }
   
-
-# Reactive output ---------------------------------------------------------
-
   
- #AGO res<-reactive({
+  # Reactive output ---------------------------------------------------------
+  
+  
+  #AGO res<-reactive({
   #AGO  a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, dose, risk))%>%pivot_longer(!c(dose,risk))
-   #AGO return(a)
+  #AGO return(a)
   #AGO})
   res<-eventReactive(input$go,{
-    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, C4, dose, risk))%>%pivot_longer(!c(dose,risk))
+    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, dose, risk))%>%pivot_longer(!c(dose,risk))
     return(a)
   })
   #### Believe currently getting total risk for all patients, change this to be for just 1 and see what happens
@@ -383,7 +370,7 @@ server <- function(input, output) {
   
   output$violinPlot<-renderPlot({
     
-
+    
     res()%>%
       ggplot()+
       geom_violin(aes(y=value,x=name,fill=name),draw_quantiles = c(0.25,0.5,0.75))+
@@ -401,7 +388,7 @@ server <- function(input, output) {
         caption="1st patient is infecitous, 2nd,3rd and 4th patients are susceptible"
       ) +
       theme(legend.position="none")
-
+    
     
   })
   
@@ -416,9 +403,9 @@ server <- function(input, output) {
     options = list(dom = 't'),
     rownames = FALSE,
     caption = 'Table 1:  Risk of infection to patient 3 [0-1].'
-  
     
-
+    
+    
   )
   #
   # output$Dose <- DT::renderDataTable(
@@ -436,49 +423,49 @@ server <- function(input, output) {
   #
   #
   # )
-
-   #})
-
-w <- reactive({
-  a<-res() %>%
-    filter(name=="C4")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
-    select(risk) %>%
-    mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
   
-  #Calculate mean and sd of all values in the nested lists
-  ms <- function(a, col="NumInfected") {
-    u <- unlist(a[[col]])
-    return(data.frame(Mean=ceiling(mean(u)),SD=ceiling(sd(u))))
-  }
+  #})
   
-  a<-ms(a)
+  w <- reactive({
+    a<-res() %>%
+      filter(name=="C3")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+      select(risk) %>%
+      mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
+    
+    #Calculate mean and sd of all values in the nested lists
+    ms <- function(a, col="NumInfected") {
+      u <- unlist(a[[col]])
+      return(data.frame(Mean=ceiling(mean(u)),SD=ceiling(sd(u))))
+    }
+    
+    a<-ms(a)
+    
+    z<-rbind(a,c(100-a$Mean,100-a$SD))
+    z<-z/100
+    z$Infected <-  as.factor(c("Infected", "Uninfected"))
+    data<-list(Infected=z$Mean[1], Possibly=z$SD[1],Uninfected=1-(z$Mean[1]+z$SD[1]) )
+    return(data)
+  })
   
-  z<-rbind(a,c(100-a$Mean,100-a$SD))
-  z<-z/100
-  z$Infected <-  as.factor(c("Infected", "Uninfected"))
-  data<-list(Infected=z$Mean[1], Possibly=z$SD[1],Uninfected=1-(z$Mean[1]+z$SD[1]) )
-  return(data)
-})
-
-
-output$waffle<-renderPlot({
   
-  wafflePlot<-
-    w() %>%
-    personograph( 
-      n.icons=100, 
-      dimensions=c(10,10), 
-      plot.width=0.8,
-      icon.style=2,
-      colors=list(Uninfected="grey", Infected="red",Possibly="orange"),
-      force.fill = TRUE,
-      fig.cap = "Number of additional infected patients per 100 (mean=red, SD=orange)"
-    )
+  output$waffle<-renderPlot({
+    
+    wafflePlot<-
+      w() %>%
+      personograph( 
+        n.icons=100, 
+        dimensions=c(10,10), 
+        plot.width=0.8,
+        icon.style=2,
+        colors=list(Uninfected="grey", Infected="red",Possibly="orange"),
+        force.fill = TRUE,
+        fig.cap = "Number of additional infected patients per 100 (mean=red, SD=orange)"
+      )
+    
+    wafflePlot
+  })
   
-  wafflePlot
-})
-
-
+  
 }
 
 # Run the application 
