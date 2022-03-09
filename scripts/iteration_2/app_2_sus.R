@@ -428,7 +428,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C3")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+      filter(name=="C2")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     
