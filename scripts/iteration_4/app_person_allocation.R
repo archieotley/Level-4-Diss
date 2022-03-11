@@ -2,7 +2,7 @@ library(dplyr)
 ### Room Mitigations ################################
 ### Room factors weightings
 
-ts_f=1.2 # Time safe fator
+ts_f=1.2 # Time safe factor
 v_f=1.4 # Volume factor
 
 ### Room factors, time since room has been deemed safe, in seconds
@@ -30,13 +30,26 @@ v_r7 = 10
 ### need term to gauge what previous infection was in the room
 
 #### level of mitigation 
-m_r1 = v_r1*v_f + ts_r1*ts_f
-m_r2 = v_r2*v_f + ts_r2*ts_f
-m_r3 = v_r3*v_f + ts_r3*ts_f
-m_r4 = v_r4*v_f + ts_r4*ts_f
-m_r5 = v_r5*v_f + ts_r5*ts_f
-m_r6 = v_r6*v_f + ts_r6*ts_f
-m_r7 = v_r7*v_f + ts_r7*ts_f
+room_mit=function(ts_f, v_f, ts_r1,v_r1 ) {
+  m_r <-  v_r1*v_f + ts_r1*ts_f
+  return(m_r)
+}  
+
+m_r1 <-room_mit(ts_f, v_f, ts_r1,v_r1)
+m_r2 <-room_mit(ts_f, v_f, ts_r2,v_r2)
+m_r3 <-room_mit(ts_f, v_f, ts_r3,v_r3)
+m_r4 <-room_mit(ts_f, v_f, ts_r4,v_r4)
+m_r5 <-room_mit(ts_f, v_f, ts_r5,v_r5)
+m_r6 <-room_mit(ts_f, v_f, ts_r6,v_r6)
+m_r7 <-room_mit(ts_f, v_f, ts_r7,v_r7)
+
+#m_r1 = v_r1*v_f + ts_r1*ts_f
+#m_r2 = v_r2*v_f + ts_r2*ts_f
+#m_r3 = v_r3*v_f + ts_r3*ts_f
+#m_r4 = v_r4*v_f + ts_r4*ts_f
+#m_r5 = v_r5*v_f + ts_r5*ts_f
+#m_r6 = v_r6*v_f + ts_r6*ts_f
+#m_r7 = v_r7*v_f + ts_r7*ts_f
 
 ### Patient risk ######################################
 ### Patient risk factors weightings
@@ -66,26 +79,63 @@ a_p6 = 120
 ### place at same time
 
 ### level of risk
-r_p1 = s_p1*s_f + a_p1*a_f
-r_p2 = s_p2*s_f + a_p2*a_f
-r_p3 = s_p3*s_f + a_p3*a_f
-r_p4 = s_p4*s_f + a_p4*a_f
-r_p5 = s_p5*s_f + a_p5*a_f
-r_p6 = s_p6*s_f + a_p6*a_f
+risk_pat=function(s_f, a_f, s_p1, a_p1 ) {
+  r_p <-s_p1*s_f + a_p1*a_f
+  return(r_p)
+}  
+
+r_p1 <-risk_pat(ts_f, v_f, ts_r1,v_r1)
+r_p2 <-risk_pat(ts_f, v_f, ts_r2,v_r2)
+r_p3 <-risk_pat(ts_f, v_f, ts_r3,v_r3)
+r_p4 <-risk_pat(ts_f, v_f, ts_r4,v_r4)
+r_p5 <-risk_pat(ts_f, v_f, ts_r5,v_r5)
+r_p6 <-risk_pat(ts_f, v_f, ts_r6,v_r6)
+
+#r_p1 = s_p1*s_f + a_p1*a_f
+#r_p2 = s_p2*s_f + a_p2*a_f
+#r_p3 = s_p3*s_f + a_p3*a_f
+#r_p4 = s_p4*s_f + a_p4*a_f
+#r_p5 = s_p5*s_f + a_p5*a_f
+#r_p6 = s_p6*s_f + a_p6*a_f
 
 ### function to match highest r_p value to the highest m_r value, need to store
 ### calculated values of r_p and m_r in order and match values 
 
-ris <- c(r_p1,r_p2,r_p3,r_p4,r_p5,r_p6)
+### store values as a vector
 
-mit <- d(m_r1,m_r2,m_r3,m_r4,m_r5,m_r6,m_r7)
+#ris <- c(r_p1,r_p2,r_p3,r_p4,r_p5,r_p6)
 
-which.max(ris)
-which.min(ris)
+#mit <- d(m_r1,m_r2,m_r3,m_r4,m_r5,m_r6,m_r7)
 
-which.max(mit)
-which.min(mit)
+### order vector values
+### potentially could order here with function remove minus numbers, then give 
+###value if room not ready a really large negative, no. so it wont get picked
 
+#ris[order(ris)]
+
+#mit[order(mit)]
+
+#x = readline();
+
+# we are converting data from string to
+# int and storing in x.
+#x = as.integer(x);
+
+# we are sorting vector and printing
+# nth element.As this vector is in sorted
+# way we will get xth largest number
+#print(sort(a,TRUE)[x])
+
+
+
+#which.max(ris)
+#which.min(ris)
+
+#which.max(mit)
+#which.min(mit)
+
+## need to get code to recognise terms, so that function is 100% working, then store values as vector??
+## then match highest values and print the values
 
 
 
