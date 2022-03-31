@@ -30,8 +30,8 @@ v_r7 = 10
 ### need term to gauge what previous infection was in the room
 
 #### level of mitigation 
-room_mit=function(ts_f, v_f, ts_r1,v_r1 ) {
-  m_r <-  v_r1*v_f + ts_r1*ts_f
+room_mit=function(ts_f, v_f, ts_r,v_r ) {
+  m_r <-  v_r*v_f + ts_r*ts_f
   return(m_r)
 }  
 
@@ -67,7 +67,7 @@ s_p6 = 10
 ### code will need to know what pathogen type the patient has to better allocate
 ### patients
 
-### Appointment per pateint, in minutes
+### Appointment per patient, in minutes
 a_p1 = 30
 a_p2 = 100
 a_p3 = 20
@@ -79,17 +79,77 @@ a_p6 = 120
 ### place at same time
 
 ### level of risk
-risk_pat=function(s_f, a_f, s_p1, a_p1 ) {
-  r_p <-s_p1*s_f + a_p1*a_f
+risk_pat=function(s_f, a_f, s_p, a_p ) {
+  r_p <-s_p*s_f + a_p*a_f
   return(r_p)
 }  
 
-r_p1 <-risk_pat(ts_f, v_f, ts_r1,v_r1)
-r_p2 <-risk_pat(ts_f, v_f, ts_r2,v_r2)
-r_p3 <-risk_pat(ts_f, v_f, ts_r3,v_r3)
-r_p4 <-risk_pat(ts_f, v_f, ts_r4,v_r4)
-r_p5 <-risk_pat(ts_f, v_f, ts_r5,v_r5)
-r_p6 <-risk_pat(ts_f, v_f, ts_r6,v_r6)
+r<-data.frame(s_f=s_f, a_f=a_f, s_p=c(s_p1, s_p2, s_p3, s_p4, s_p5,s_p6 ), a_p=c(a_p1, a_p2,a_p3, a_p4,a_p5,a_p6))
+r%>%purrr::map_df(.f=risk_pat)
+
+purrr::map(
+  .x = 1:nrow(my_tibble),
+  .f = ~
+
+###change values 
+r_p1 <-risk_pat(s_f, a_f, s_p1, a_p1)
+r_p2 <-risk_pat(s_f, a_f, s_p2, a_p2)
+r_p3 <-risk_pat(s_f, a_f, s_p3, a_p3)
+r_p4 <-risk_pat(s_f, a_f, s_p4, a_p4)
+r_p5 <-risk_pat(s_f, a_f, s_p5, a_p5)
+r_p6 <-risk_pat(s_f, a_f, s_p6, a_p6)
+
+#ris <- c(r_p)
+#mit <- c(m_r)
+
+allocation<-data.frame( r=c(   r_p1,
+                           r_p2,
+                           r_p3,
+                           r_p4,
+                           r_p5,
+                           r_p6,
+                           NA),
+                        m=c(
+                           m_r1,
+                           m_r2,
+                           m_r3,
+                           m_r4,
+                           m_r5,
+                           m_r6,
+                           m_r7)
+)
+
+return(allocation)
+
+allocation_order<- allocation[order(allocation$r_p,allocation$m_r)]
+
+risk<-data.frame(    r_p1,
+                     r_p2,
+                     r_p3,
+                     r_p4,
+                     r_p5,
+                     r_p6
+)
+
+mit<-data.frame(
+                     m_r1,
+                     m_r2,
+                     m_r3,
+                     m_r4,
+                     m_r5,
+                     m_r6,
+                     m_r7
+                     
+)
+#randomVals <-  dont know how to work this button
+return(risk)
+return(mit)
+
+
+risk_order <- risk[order(risk$r_p)]
+mit_order <- mit[order(mit$m_r)]
+
+
 
 #r_p1 = s_p1*s_f + a_p1*a_f
 #r_p2 = s_p2*s_f + a_p2*a_f
