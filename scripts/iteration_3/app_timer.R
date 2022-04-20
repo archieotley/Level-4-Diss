@@ -318,10 +318,14 @@ server <- function(input, output) {
     
     Cs<-0.05*C01
     
-    time_safe=function(Cs,c(C=out1$C[NROW(out1)]),E,lambda,V) {
-      Ts<-log((Cs-E/(lambda*V))/(c(C=out1$C[NROW(out1)])-E/(lambda*V)))/(-lambda)
+    time_safe=function(Cs,C,E,lambda,V) {
+      Ts<-log((Cs-E/(lambda*V))/(C-E/(lambda*V)))/(-lambda)
       return(Ts)
     }  
+#    time_safe=function(Cs,out1$C[NROW(out1)],E,lambda,V) {
+#      Ts<-log((Cs-E/(lambda*V))/(out1$C[NROW(out1)]-E/(lambda*V)))/(-lambda)
+#      return(Ts)
+#    }  
     
     p<-c()
     

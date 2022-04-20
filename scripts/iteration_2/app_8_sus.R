@@ -67,6 +67,8 @@ ui <- fluidPage(
            sliderInput("delay", label = "Time between appointments (mins):",
                        min = 10, max = 60, value = 30, step = 10),
            
+           actionButton("save", "Save to .csv file"),
+           
            # checkboxGroupInput('Mit', 'Mitigations:', c('Window Open', 'Air Cleaner', 'Door Open'), 
            #     selected = c(1)),
            
@@ -480,7 +482,13 @@ server <- function(input, output) {
   #   res<-data.frame(value=runif(1e3)*as.numeric(input$ach),name=rep(c("A","B"),each=500),risk=runif(1e3)*as.numeric(input$k))  
   #   res
   # })
-  
+  eventReactive(input$save,{
+    write.csv(res()
+              , file = "solution8.csv"
+              , row.names=F
+    )
+  }
+  )
   output$violinPlot<-renderPlot({
     
     
@@ -541,7 +549,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C9")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+     filter(name=="C9")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     

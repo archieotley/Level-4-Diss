@@ -457,7 +457,7 @@ server <- function(input, output) {
     #AGOreturn(n_result)
     
     tmp<-
-      out10%>%
+      out3%>%
       summarise(dose=AUC(times,C*p))%>%
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
