@@ -57,6 +57,8 @@ ui <- fluidPage(
                        min = 10, max = 60, value = 30, step = 10),
            
            downloadButton('downloadData', 'Download to .csv'),
+           
+           downloadButton('downloadDataout', 'Download out to .csv'),
 
     ),
 
@@ -192,21 +194,36 @@ server <- function(input, output) {
     )
 
     return(n_result)
-    
-    
+
+  
   }
   
   
   # Reactive output ---------------------------------------------------------
-
+  
+  conc.out<-eventReactive(input$go,{
+    b<-n_result
+    return(b)
+  })
+    
+  output$downloadDataout <- downloadHandler(
+    filename = "out2.csv" ,
+    content = function(file) {
+      write.csv(conc.out(), file, row.names = FALSE)
+    }
+  )
+  
+  
+  
   res<-eventReactive(input$go,{
     a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, dose, risk))%>%pivot_longer(!c(dose,risk))
     return(a)
   })
 
   
+  
   output$downloadData <- downloadHandler(
-    filename = "solution.8.csv" ,
+    filename = "solution.2.csv" ,
     content = function(file) {
       write.csv(res(), file, row.names = FALSE)
     }
