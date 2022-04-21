@@ -69,6 +69,8 @@ ui <- fluidPage(
            
            actionButton("save", "Save to .csv file"),
            
+           downloadButton('downloadData', 'Download to .csv'),
+           
            # checkboxGroupInput('Mit', 'Mitigations:', c('Window Open', 'Air Cleaner', 'Door Open'), 
            #     selected = c(1)),
            
@@ -205,7 +207,7 @@ server <- function(input, output) {
   ts =  qt(c(.025, .975), df=NROW(pval)-1)   # T-Score
   CI = meanp + ts*SEM                     # Confidence Intervals
   
-  N=500
+  N=50
   logE <- truncdist::rtrunc(n = N , spec = "norm" ,a = 0 ,b = 6, mean=m, sd=s)
   p <- ((CI[1]+runif(N)*CI[2]+runif(N))*0.001)/60 
   #p <- ((CI[1]+runif(N)*CI[2]+runif(N)*CI[3])*0.001)/60 #AGO added in p3
@@ -482,6 +484,25 @@ server <- function(input, output) {
   #   res<-data.frame(value=runif(1e3)*as.numeric(input$ach),name=rep(c("A","B"),each=500),risk=runif(1e3)*as.numeric(input$k))  
   #   res
   # })
+  
+
+  output$downloadData <- downloadHandler(
+    filename = "solution.8.csv" ,
+    content = function(file) {
+      write.csv(res(), file, row.names = FALSE)
+    }
+  )
+  
+  
+  # eventReactive(input$downloadData,{
+  #   write.csv(res()
+  #             , file = "solution8.csv"
+  #             , row.names=FALSE
+  #   )
+  # }
+  # )
+
+  
   eventReactive(input$save,{
     write.csv(res()
               , file = "solution8.csv"
@@ -489,6 +510,15 @@ server <- function(input, output) {
     )
   }
   )
+
+  # eventReactive(input$downloadData <- downloadHandler(
+  #   file = "solution.8.csv" ,
+  #   content = function(file) {
+  #     write.csv(res(), file, row.names = FALSE)
+  #   }
+  # )
+  # )
+  
   output$violinPlot<-renderPlot({
     
     
@@ -516,10 +546,10 @@ server <- function(input, output) {
   output$Risk <- DT::renderDataTable(
     #reactive({
     res()%>%
-      summarise(Mean =round(mean(risk,na.rm = T),digits = 3),
-                SD = round(sd(risk,na.rm = T),digits = 3),
-                Min = round(min(risk,na.rm = T),digits = 3),
-                Max = round(max(risk,na.rm = T),digits = 3)
+      summarise(Mean =round(mean(risk,na.rm = T),digits = 9),
+                SD = round(sd(risk,na.rm = T),digits = 9),
+                Min = round(min(risk,na.rm = T),digits = 9),
+                Max = round(max(risk,na.rm = T),digits = 9)
       ),
     options = list(dom = 't'),
     rownames = FALSE,
@@ -549,7 +579,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-     filter(name=="C9")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+     filter(name=="C2")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     
