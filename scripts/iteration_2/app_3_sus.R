@@ -385,6 +385,108 @@ server <- function(input, output) {
   #   res
   # })
   
+  ######## AGO tried to make all event reactive to go, didnt work, no plots produced
+#   output$violinPlot<-eventReactive(input$go,{renderPlot({
+#     
+#     
+#     res()%>%
+#       ggplot()+
+#       geom_violin(aes(y=value,x=name,fill=name),draw_quantiles = c(0.25,0.5,0.75))+
+#       scale_y_log10()+
+#       #facet_wrap(~surface,scales = "free",nrow = 2,labeller = labeller(.cols = surfaceTypes))+
+#       #scale_color_ipsum() +
+#       #scale_fill_ipsum() +
+#       scale_fill_brewer(palette = "Set1")+
+#       ylab("Final airborne concentration [cfu/m3]")+
+#       scale_x_discrete(labels= c("Infectious Patient","Susceptible patient 1", "Susceptible patient 2","Susceptible patient 3"))+
+#       xlab("")+
+#       labs(
+#         title="Airborne concentration",
+#         subtitle="Comparison between patient sessions",
+#         caption="1st patient is infecitous, 2nd,3rd and 4th patients are susceptible"
+#       ) +
+#       theme(legend.position="none")
+#     
+#   })
+#   })
+#   
+#   output$Risk <-eventReactive(input$go,{ DT::renderDataTable(
+#     #reactive({
+#     # eventReactive(input$go,{
+#     res()%>%
+#       summarise(Mean =round(mean(risk,na.rm = T),digits = 9),
+#                 SD = round(sd(risk,na.rm = T),digits = 9),
+#                 Min = round(min(risk,na.rm = T),digits = 9),
+#                 Max = round(max(risk,na.rm = T),digits = 9)
+#       ),
+#     options = list(dom = 't'),
+#     rownames = FALSE,
+#     caption = 'Table 1:  Risk of infection to patient 3 [0-1].'
+#     
+#     )})
+#     
+#   
+#   #
+#   # output$Dose <- DT::renderDataTable(
+#   #   #reactive({
+#   #   res()%>%
+#   #     summarise(Mean =round(mean(dose,na.rm = T),digits = 3),
+#   #               SD = round(sd(dose,na.rm = T),digits = 3),
+#   #               Min = round(min(dose,na.rm = T),digits = 3),
+#   #               Max = round(max(dose,na.rm = T),digits = 3)
+#   #     ),
+#   #   options = list(dom = 't'),
+#   #   rownames = FALSE,
+#   #   caption = 'Table 2:  Dose inhaled by patient 3 [cfu].'
+#   #
+#   #
+#   #
+#   # )
+#   
+#   #})
+#   
+#   w <- eventReactive(input$go,{
+#     a<-res() %>%
+#      filter(name=="C4")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+#       select(risk) %>%
+#       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
+#     
+#     #Calculate mean and sd of all values in the nested lists
+#     ms <- function(a, col="NumInfected") {
+#       u <- unlist(a[[col]])
+#       return(data.frame(Mean=ceiling(mean(u)),SD=ceiling(sd(u))))
+#     }
+#     
+#     a<-ms(a)
+#     
+#     z<-rbind(a,c(100-a$Mean,100-a$SD))
+#     z<-z/100
+#     z$Infected <-  as.factor(c("Infected", "Uninfected"))
+#     data<-list(Infected=z$Mean[1], Possibly=z$SD[1],Uninfected=1-(z$Mean[1]+z$SD[1]) )
+#     return(data)
+#   })
+#   
+#   
+#   output$waffle<-renderPlot({
+#     
+#     wafflePlot<-
+#       w() %>%
+#       personograph( 
+#         n.icons=100, 
+#         dimensions=c(10,10), 
+#         plot.width=0.8,
+#         icon.style=2,
+#         colors=list(Uninfected="grey", Infected="red",Possibly="orange"),
+#         force.fill = TRUE,
+#         fig.cap = "Number of additional infected patients per 100 (mean=red, SD=orange)"
+#       )
+#     
+#     wafflePlot
+#   })
+#   
+#   
+# }
+  
   output$violinPlot<-renderPlot({
     
     
@@ -412,6 +514,7 @@ server <- function(input, output) {
   output$Risk <- DT::renderDataTable(
     #reactive({
     res()%>%
+      filter(name=="C2")%>% ### AGO belive filters to get patients risk
       summarise(Mean =round(mean(risk,na.rm = T),digits = 3),
                 SD = round(sd(risk,na.rm = T),digits = 3),
                 Min = round(min(risk,na.rm = T),digits = 3),
@@ -445,7 +548,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C4")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+      filter(name=="C2")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     

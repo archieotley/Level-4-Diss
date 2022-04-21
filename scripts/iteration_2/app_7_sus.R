@@ -421,7 +421,7 @@ server <- function(input, output) {
     #AGOreturn(n_result)
     
     tmp<-
-      out8%>%
+      out8%>%###########trying 
       summarise(dose=AUC(times,C*p))%>%
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
@@ -489,6 +489,7 @@ server <- function(input, output) {
   output$Risk <- DT::renderDataTable(
     #reactive({
     res()%>%
+      # filter(name=="C2")%>% ### AGO belive filters to get patients risk
       summarise(Mean =round(mean(risk,na.rm = T),digits = 3),
                 SD = round(sd(risk,na.rm = T),digits = 3),
                 Min = round(min(risk,na.rm = T),digits = 3),
@@ -522,7 +523,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C8")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+     # filter(name=="C4")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     
@@ -564,3 +565,4 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
