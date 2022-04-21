@@ -75,7 +75,7 @@ patient.roster <- patient.roster %>%
 # set up a data.frame to store room concentrations after each patient has left.
 room.conc.storage <- data.frame()
 
-while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<12){
+while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
   
   
   for(i in 1:NROW(patient.roster)){
@@ -202,7 +202,7 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<12){
               if(Infection.type[i]==C){
                 conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
                 conc.P->C01*exp(-lambda*appointment.length*3600)
-              } 
+              }
             else if (Infection.type[i]==P){
               conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
               conc.C->C01*exp(-lambda*appointment.length*3600)
@@ -500,13 +500,12 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<12){
           mutate(occupied=replace(occupied,room.letter==temp.letter,"No")) ->room.conc
         
       }
-    # }
-  else{
+     }else{
       print("Still trying to fit patients in")
     }
     
   }
-
+}
 patient.roster
 room.conc.storage
 

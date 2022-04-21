@@ -49,10 +49,10 @@ patient.roster <- patient.roster %>%
 #TODO Allow multiple clinicians to work simultaneously - Currently only assumes 1 which makes the wait/clash in patient.roster. 
 
 #Variable fallow time
-patient.roster %>% 
-  group_by(ID) %>% 
- map_dfr(rbind, NA) %>%
- mutate(ID = rep(patient.roster$ID, each = 2))
+# patient.roster %>% 
+#   group_by(ID) %>% 
+#  map_dfr(rbind, NA) %>%
+#  mutate(ID = rep(patient.roster$ID, each = 2))
 
 #TODO incorporate variability in output for Monte Carlo
 #TODO add room variability
@@ -132,6 +132,7 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<12){
               ######              conc.C->C01*exp(-lambda*appointment.length*3600)
               ######          }
               ######            else {}
+            
             
               mutate(across(conc.C,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
          mutate(across(conc.P,~.x/runif(1,min=0,max=1)))->room.conc
