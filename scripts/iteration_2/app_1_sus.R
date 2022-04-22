@@ -205,15 +205,15 @@ server <- function(input, output) {
     b<-n_result
     return(b)
   })
-    
+
   output$downloadDataout <- downloadHandler(
     filename = "out2.csv" ,
     content = function(file) {
-      write.csv(conc.out(), file, row.names = FALSE)
+      write.csv(exposure(), file, row.names = FALSE)
     }
   )
-  
-  
+
+
   
   res<-eventReactive(input$go,{
     a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, dose, risk))%>%pivot_longer(!c(dose,risk))
