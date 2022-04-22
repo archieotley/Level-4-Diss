@@ -202,14 +202,14 @@ server <- function(input, output) {
   # Reactive output ---------------------------------------------------------
   
   conc.out<-eventReactive(input$go,{
-    b<-n_result
+    b<-exposure()
     return(b)
   })
 
   output$downloadDataout <- downloadHandler(
     filename = "out2.csv" ,
     content = function(file) {
-      write.csv(exposure(), file, row.names = FALSE)
+      write.csv(conc.out(), file, row.names = FALSE)
     }
   )
 
@@ -220,7 +220,6 @@ server <- function(input, output) {
     return(a)
   })
 
-  
   
   output$downloadData <- downloadHandler(
     filename = "solution.2.csv" ,
