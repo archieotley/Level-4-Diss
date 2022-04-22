@@ -121,11 +121,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="C"){
                 conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.P->C01*exp(-lambda*appointment.length*3600)
+                conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
               } 
             else if (patient.roster[i,]$patient.infection=="P"){
               conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.C->C01*exp(-lambda*appointment.length*3600)
+              conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             
@@ -179,11 +179,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="C"){
                 conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.P->C01*exp(-lambda*appointment.length*3600)
+                conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
               }
             else if (patient.roster[i,]$patient.infection=="P"){
               conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.C->C01*exp(-lambda*appointment.length*3600)
+              conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             # mutate(across(conc.C,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
@@ -229,11 +229,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="C"){
                 conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.P->C01*exp(-lambda*appointment.length*3600)
+                conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
               } 
             else if (patient.roster[i,]$patient.infection=="P"){
               conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.C->C01*exp(-lambda*appointment.length*3600)
+              conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             # mutate(across(conc.C,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
@@ -306,11 +306,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="P"){
                 conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.C->C01*exp(-lambda*appointment.length*3600)
+                conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
               } 
             else if (patient.roster[i,]$patient.infection=="C"){
               conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.P->C01*exp(-lambda*appointment.length*3600)
+              conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             # mutate(across(conc.P,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
@@ -363,11 +363,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="P"){
                 conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.C->C01*exp(-lambda*appointment.length*3600)
+                conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
               } 
             else if (patient.roster[i,]$patient.infection=="C"){
               conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.P->C01*exp(-lambda*appointment.length*3600)
+              conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             # mutate(across(conc.P,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
@@ -413,11 +413,11 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
             room.conc %>% 
               if(patient.roster[i,]$patient.infection=="P"){
                 conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-                conc.C->C01*exp(-lambda*appointment.length*3600)
+                conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
               } 
             else if (patient.roster[i,]$patient.infection=="C"){
               conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
-              conc.P->C01*exp(-lambda*appointment.length*3600)
+              conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
             # mutate(across(conc.P,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
@@ -463,10 +463,10 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
         #FIXME Placeholder for the ODE but for the moment just decrease by random factor
         room.conc %>% 
           if(patient.roster[i,]$patient.infection=="P"){
-            conc.P->C01*exp(-lambda*appointment.length*3600)
+            conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)
           } 
         else if (patient.roster[i,]$patient.infection=="C"){
-          conc.C->C01*exp(-lambda*appointment.length*3600)
+          conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
         }
         else {}
         # mutate(across(conc.C:conc.P,~.x*runif(1,min=0,max=1)))->room.conc
