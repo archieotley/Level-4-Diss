@@ -128,7 +128,6 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
               conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)
             }
             else {}
-            
             # mutate(across(conc.C,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
             #   mutate(across(conc.P,~.x/runif(1,min=0,max=1)))->room.conc
             

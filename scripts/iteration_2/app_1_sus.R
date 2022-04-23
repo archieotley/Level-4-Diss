@@ -202,7 +202,7 @@ server <- function(input, output) {
   # Reactive output ---------------------------------------------------------
   
   conc.out<-eventReactive(input$go,{
-    b<-exposure()
+    b<-mcmapply(FUN = exposure, SIMPLIFY = FALSE)
     return(b)
   })
 
@@ -310,3 +310,4 @@ server <- function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
