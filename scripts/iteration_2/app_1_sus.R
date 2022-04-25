@@ -187,13 +187,13 @@ server <- function(input, output) {
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
     
-    n_result<-data.frame(C1=out1$C[NROW(out1)],
+    exposure<-data.frame(C1=out1$C[NROW(out1)],
                          C2=out2$C[NROW(out2)],
                          dose=tmp$dose,
                          risk=tmp$risk
     )
 
-    return(n_result)
+    return(exposure)
 
   
   }
@@ -229,8 +229,10 @@ server <- function(input, output) {
     a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%
       t()%>%
       as.data.frame() %>%
-      unnest(cols=c(C1, C2, dose, risk))%>%
-      pivot_longer(!c(dose,risk))
+      unnest(cols=c(C1, C2, dose, risk)) %>% 
+    pivot_longer(!c(dose,risk))
+    a<-cbind(a,logE,p)#%>% 
+      # pivot_longer(!c(dose,risk))
     return(a)
   })
 
