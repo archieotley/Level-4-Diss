@@ -197,15 +197,26 @@ server <- function(input, output) {
 
   
   }
-  
-  
+
+  # conc.out<-eventReactive(input$go{
+  #   cbind(conc.out, exposure())
+  # # write_csv(conc.out,'concout2.csv')
+  # })
   # Reactive output ---------------------------------------------------------
   
-  conc.out<-eventReactive(input$go,{
-    b<-mcmapply(FUN = exposure, SIMPLIFY = FALSE)
-    return(b)
-  })
-
+  # return(a)
+  # Sys.sleep(5)
+  # b<-mcmapply(FUN = exposure, SIMPLIFY = FALSE)
+  
+   conc.out<-eventReactive(input$go,{
+     b<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%
+       t()%>%
+       as.data.frame() %>%
+       unnest(cols=c(C1, C2, dose, risk))%>%
+       pivot_longer(!c(dose,risk))
+     return(b)
+   })
+  
   output$downloadDataout <- downloadHandler(
     filename = "out2.csv" ,
     content = function(file) {
@@ -213,10 +224,13 @@ server <- function(input, output) {
     }
   )
 
-
   
   res<-eventReactive(input$go,{
-    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, dose, risk))%>%pivot_longer(!c(dose,risk))
+    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%
+      t()%>%
+      as.data.frame() %>%
+      unnest(cols=c(C1, C2, dose, risk))%>%
+      pivot_longer(!c(dose,risk))
     return(a)
   })
 

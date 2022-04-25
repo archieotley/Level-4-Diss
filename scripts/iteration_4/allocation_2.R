@@ -11,7 +11,7 @@ clinicians <- data.frame(clinicians=c("Ian","Dan"),is.free=rep("Yes"),binary.is.
 
 # patient_roster<- read.csv("patient_roster_P.csv")
 # patient_roster<- read.csv("patient_roster_C.csv")
-# patient_roster<- read.csv("patient_roster_NA.csv")
+#patient_roster<- read.csv("patient_roster_NA.csv")
 patient_roster<- read.csv("patient_roster.csv")
 patient_roster<-patient_roster %>%
   filter(Patient!="Fake Patient")
@@ -130,6 +130,15 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
               conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
             }
             else {}
+            #   if(patient.roster[i,]$patient.infection=="C"){
+            #     conc.C->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
+            #     conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
+            #   } 
+            # else if (patient.roster[i,]$patient.infection=="P"){
+            #   conc.P->E/(V*lambda)*(1-exp(-lambda*(appointment.length*3600)))
+            #   conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
+            # }
+            # else {}
             # mutate(across(conc.C,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
             #   mutate(across(conc.P,~.x/runif(1,min=0,max=1)))->room.conc
             
@@ -371,6 +380,8 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
               conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
             }
             else {}
+            ## FIXME room.conc.storage could be replaced by (conc.P+conc.C) then all decrease at same rate 
+            
             # mutate(across(conc.P,~.x*runif(1,min=0,max=1))) %>% #reduces C but increases P. Currently reduces all the rooms even if they are used concurrently
             # mutate(across(conc.C,~.x/runif(1,min=0,max=1)))->room.conc
             
@@ -441,8 +452,6 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
         
         
         
-        
-        
       }else{ #Patients with no previous infection
         
         room.conc %>% 
@@ -463,14 +472,21 @@ while(sum(patient.roster$binary.seen.yet,na.rm=TRUE)<10){
         
         #FIXME Placeholder for the ODE but for the moment just decrease by random factor
         room.conc %>% 
+        #   if(patient.roster[i,]$patient.infection%in% c("P", "C")){
+        #     conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
+        #   } 
+        # else {}  
+          
+# Tried calling out else function in different way, same problem, also in example below changed example of how to change infection concentration amount
+
           if(patient.roster[i,]$patient.infection=="P"){
-            conc.P->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
-          } 
+            conc.P->room.conc$conc.P*exp(-lambda*appointment.length*3600)->room.conc
+          }
         else if (patient.roster[i,]$patient.infection=="C"){
-          conc.C->room.conc.storage*exp(-lambda*appointment.length*3600)->room.conc
+          conc.C->room.conc$conc.C*exp(-lambda*appointment.length*3600)->room.conc
         }
         else {}
-        # mutate(across(conc.C:conc.P,~.x*runif(1,min=0,max=1)))->room.conc
+  
         
         #Stores final concentrations of the room after each patient
         room.conc.storage %>% 
