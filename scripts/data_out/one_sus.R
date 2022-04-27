@@ -1,9 +1,33 @@
-N=500
-set.seed(123)
+
+library(dplyr)
+library(tidyr)
+library(truncdist)
+library(vroom)
+library(janitor)
+library(zoo)
+library(shiny)
+library(flexdashboard)
+library(parallel)
+library(ggplot2)
+library(data.table)
+library(DT)
+library(personograph)
+library(RColorBrewer)
+library(plotly)
+library(cowplot)
+
+
+####### Inputs manually chosen
+
+N=1000
+set.seed(42)
 times<-runif(N,min = 10,max = 120)
-ach=runif(N,min = 0.1,max = 10)
+ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
-k=rep(2,N)#runif(N,min = 0.01,max = 3)
+k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
+V <-runif(N,min=10, max=40) 
+
+
 
 m<-1.52365; s<-1.151533
 # Breathing rate
@@ -55,7 +79,7 @@ AUC <- function(x,y){ #To allow for non-uniform time-steps
 
 
 # Exposure function -----------------------------------------------------
-exposure<-function(logE,p,ach,times,delay,k){
+exposure<-function(logE,p,ach,times,delay,k,V){
   
   
   E <- (10^(logE))/3600
@@ -69,7 +93,7 @@ exposure<-function(logE,p,ach,times,delay,k){
   lambda  <- lambda_v+lambda_i+lambda_d
   
   #Variable volume
-  V <- 31.9+(runif(1)*11.8)  #area from all room sizes
+    #area from all room sizes
   
   ####### Part 1 patient in the room
   
@@ -116,32 +140,121 @@ exposure<-function(logE,p,ach,times,delay,k){
   
 }
 
-df=mcmapply(FUN = exposure,logE,p,ach,times,delay,k,mc.cores = 1) %>% t()%>%
+df=mcmapply(FUN = exposure,logE,p,ach,times,delay,k,V,mc.cores = 1) %>%
+  t()%>%
   as.data.frame() %>%
   unnest(cols=c(C1, C2, dose, risk))
   #pivot_longer(!c(dose,risk))
 
-
-
   
-  
-df=cbind(df,logE,p,ach,times,delay,k)
+df=cbind(df,logE,p,ach,times,delay,k,V)
 
 
 plot(df)
 
-
-df %>% 
-  ggplot()+
+p1 <- ggplot(df, aes(y=risk,x=ach))+
   geom_point(aes(y=risk,x=ach),alpha=0.2)+
   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
   hrbrthemes::theme_ipsum()
+
+p2 <- ggplot(df, aes(y=risk,x=V))+
+  geom_point(aes(y=risk,x=V),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+p3 <- ggplot(df, aes(y=risk,x=k))+
+  geom_point(aes(y=risk,x=k),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+p4 <- ggplot(df, aes(y=risk,x=delay))+
+  geom_point(aes(y=risk,x=delay),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+p5 <- ggplot(df, aes(y=risk,x=times))+
+  geom_point(aes(y=risk,x=times),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=times),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+p6 <- ggplot(df, aes(y=risk,x=p))+
+  geom_point(aes(y=risk,x=p),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+p7 <- ggplot(df, aes(y=risk,x=logE))+
+  geom_point(aes(y=risk,x=logE),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
+  hrbrthemes::theme_ipsum()
+
+plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, NULL, ncol = 4)
+
+title <- ggdraw() + 
+  draw_label(
+    "Risk compared to Variables",
+    fontface = 'bold',
+    x = 0,
+    hjust = 0
+  ) +
+  theme(
+    # add margin on the left of the drawing canvas,
+    # so title is aligned with left edge of first plot
+    plot.margin = margin(0, 0, 0, 7)
+  )
+plot_grid(
+  title, plot_row,
+  ncol = 1,
+  # rel_heights values control vertical title margins
+  rel_heights = c(0.05, 0.5)
+)
+
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=ach),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>%
+#   ggplot()+
+#   geom_point(aes(y=risk,x=V),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=k),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=delay),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=times),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=times),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=p),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
+# 
+# df %>% 
+#   ggplot()+
+#   geom_point(aes(y=risk,x=logE),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
+#   hrbrthemes::theme_ipsum()
 
 
 fit.lm=lm(data=df %>% select(-c(C1,C2,risk)),log10(dose)~.)
 plot(fit.lm)
 
-broom::tidy(fit.lm)
 
+broom::tidy(fit.lm)
 
 
