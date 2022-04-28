@@ -128,10 +128,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t03=tend2
-  tend3= tend2 +as.numeric(input$times)*60 #X * 60 X is time in mins
-  #tspan2=[t02 tend2]
+  tend3= tend2 +as.numeric(times)*60; #X * 60 X is time in mins
+
   times <- seq(t03, tend3, by = 1)
-  #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
   parameters<-c(0,V,lambda)
