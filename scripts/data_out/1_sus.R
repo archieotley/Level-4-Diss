@@ -40,9 +40,9 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=1000
+N=10
 set.seed(42)
-times<-runif(N,min = 10,max = 120)
+times=runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
 k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
@@ -102,7 +102,8 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   tend1= as.numeric(times)*60 #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
   
-  times <- seq(t01, tend1, by = 1)
+  #times<-seq(t01,tend1,by=1)
+  times <- mapply(":",t01,tend1)
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
@@ -114,7 +115,8 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   t02=tend1
   tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
   
-  times <- seq(t02, tend2, by = 1)
+  #times<-seq(t02,tend2,by=1)
+  times <- mapply(":",t02,tend2)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -129,8 +131,8 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #E0=0
   t03=tend2
   tend3= tend2 +as.numeric(times)*60; #X * 60 X is time in mins
-
-  times <- seq(t03, tend3, by = 1)
+  #times<-seq(t03,tend3,by=1)
+  times <- mapply(":",t03,tend3)
   #E0=0           #emission now 0
   
   parameters<-c(0,V,lambda)
@@ -139,17 +141,22 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   
   analyticalODE(times,0,V,lambda,out2$C[NROW(out2)])-> out3
   
-  tmp<-
+  tmp1<-
     out3%>%
     summarise(dose=AUC(times,C*p))%>%
     mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
+  
+  # tmp2<-
+  #   out5%>%
+  #   summarise(dose=AUC(times,C*p))%>%
+  #   mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
   
   
   exposure<-data.frame(C1=out1$C[NROW(out1)],
                        C2=out2$C[NROW(out2)],
                        C3=out3$C[NROW(out3)],
-                       dose=tmp$dose,
-                       risk=tmp$risk
+                       dose=tmp1$dose,
+                       risk=tmp1$risk
   )
   
   return(exposure)

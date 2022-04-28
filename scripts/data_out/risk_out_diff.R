@@ -123,7 +123,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){## alter times,k, and p so
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
-  analyticalODE(timesa,E,V,lambda,C01)-> out1
+  analyticalODE(times,E,V,lambda,C01)-> out1
   
   ###### Part 2 patient leaves the room
   

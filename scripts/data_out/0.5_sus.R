@@ -1,6 +1,6 @@
 ###TODO Every other concentration represents a patient, delay, times
 ###TODO add in other people
-###TODO ONLY GET DOSE FROM POINTS WHEN PATIENT IS IN
+###TODO ONLY GET DOSE FROM POINTS WHEN SUSEPTIBLE PATIENT IS IN
 ###TODO get line of best fit stats out
 
 library(dplyr)
@@ -41,9 +41,9 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=1000
+N=500
 set.seed(42)
-times<-runif(N,min = 10,max = 120)
+times=runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
 k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
@@ -100,10 +100,14 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   ####### Part 1 patient in the room
   
   t01=0
-  tend1= as.numeric(times)*60 #X * 60 X is time in mins, to give seconds
+  tend1= (as.numeric(times)*60); #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
   
-  times <- seq(t01, tend1, by = 1)
+  #times <- seq(t01, tend1, by = 1)
+  times <- mapply(":",t01,tend1)
+  
+  #sequence.default(t01, tend1, by = 1)
+  #times <- t01+tend1
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
@@ -115,7 +119,10 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   t02=tend1
   tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
   
-  times <- seq(t02, tend2, by = 1)
+  #times <- t01+tend1 +t02+tend2
+  # times <- seq(t02, tend2, by = 1)
+  times <- mapply(":",t02,tend2)
+  #times <- sequence.default(t02, tend2, by = 1)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   

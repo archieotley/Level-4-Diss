@@ -40,7 +40,7 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=1000
+N=5
 set.seed(42)
 times<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
@@ -102,7 +102,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   tend1= as.numeric(times)*60 #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
   
-  times <- seq(t01, tend1, by = 1)
+  times <- mapply(":",t01,tend1)
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
@@ -114,7 +114,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   t02=tend1
   tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
   
-  times <- seq(t02, tend2, by = 1)
+  times <- mapply(":",t02,tend2)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -128,9 +128,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t03=tend2
-  tend3= tend2 +as.numeric(input$times)*60 #X * 60 X is time in mins
+  tend3= tend2 +as.numeric(times)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  times <- seq(t03, tend3, by = 1)
+  times <- mapply(":",t03,tend3)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -145,9 +145,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t04=tend3
-  tend4= tend3 +as.numeric(input$delay)*60 #X * 60 X is time in mins
+  tend4= tend3 +as.numeric(delay)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  times <- seq(t04, tend4, by = 1)
+  times <- mapply(":",t04,tend4)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -162,9 +162,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t05=tend4
-  tend5= tend4 +as.numeric(input$times)*60 #X * 60 X is time in mins
+  tend5= tend4 +as.numeric(times)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  times <- seq(t05, tend5, by = 1)
+  times <- mapply(":",t05,tend5)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -174,7 +174,12 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   
   analyticalODE(times,0,V,lambda,out4$C[NROW(out4)])-> out5
   
-  tmp<-
+  tmp1<-
+    out3%>%
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
+  
+  tmp2<-
     out5%>%
     summarise(dose=AUC(times,C*p))%>%
     mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
@@ -185,8 +190,10 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
                        C3=out3$C[NROW(out3)],
                        C4=out4$C[NROW(out4)],
                        C5=out5$C[NROW(out5)],
-                       dose=tmp$dose,
-                       risk=tmp$risk
+                       dose=tmp1$dose,
+                       risk=tmp1$risk,
+                       # dose=tmp2$dose,
+                       # risk=tmp2$risk
   )
   
   return(exposure)
