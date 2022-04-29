@@ -40,7 +40,7 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=500
+N=100
 set.seed(42)
 times_appt<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
@@ -235,7 +235,7 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   parameters<-c(0,V,lambda)
   init<-c(C=out8$C[NROW(out8)])
   
-  analyticalODE(times,0,V,lambda,out7$C[NROW(out8)])-> out9
+  analyticalODE(times,0,V,lambda,out8$C[NROW(out8)])-> out9
   
   tmp1<-
     out3%>%
@@ -290,41 +290,49 @@ plot(df)
 p1 <- ggplot(df, aes(y=risk,x=ach))+
   geom_point(aes(y=risk,x=ach),alpha=0.2)+
   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p2 <- ggplot(df, aes(y=risk,x=V))+
   geom_point(aes(y=risk,x=V),alpha=0.2)+
   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p3 <- ggplot(df, aes(y=risk,x=k))+
   geom_point(aes(y=risk,x=k),alpha=0.2)+
   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p4 <- ggplot(df, aes(y=risk,x=delay))+
   geom_point(aes(y=risk,x=delay),alpha=0.2)+
   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p5 <- ggplot(df, aes(y=risk,x=times_appt))+
   geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
   geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p6 <- ggplot(df, aes(y=risk,x=p))+
   geom_point(aes(y=risk,x=p),alpha=0.2)+
   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p7 <- ggplot(df, aes(y=risk,x=logE))+
   geom_point(aes(y=risk,x=logE),alpha=0.2)+
   geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p8 <- ggplot(df, aes(y=risk,x=lambda))+
   geom_point(aes(y=risk,x=lambda),alpha=0.2)+
   geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 4)
@@ -348,54 +356,64 @@ plot_grid(
   rel_heights = c(0.05, 0.5)
 )
 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=ach),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>%
-#   ggplot()+
-#   geom_point(aes(y=risk,x=V),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=k),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=delay),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=times),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=times),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=p),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-# 
-# df %>% 
-#   ggplot()+
-#   geom_point(aes(y=risk,x=logE),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
-#   hrbrthemes::theme_ipsum()
-
-
 # fit.lm=lm(data=df %>% select(-c(C1,C2,C3,C4,C5,C6,C7,C8,C9,risk)),log10(dose)~.)
 fit.lm=lm(data=df %>% select(-c(C3,C5,C7,C9,risk)),log10(dose)~.)
-plot(fit.lm)
+# plot(fit.lm)
 
 
 broom::tidy(fit.lm)
+
+# df$risk <- as.factor(df$risk)
+# head(df)
+
+p <- ggplot(df, aes(x=name, y=risk, fill=name)) + 
+  geom_violin()
+
+
+p <- 
+  ggplot(df, aes(y=risk,x=name,fill=name))+
+  geom_violin(draw_quantiles = c(0.25,0.5,0.75))+
+  scale_y_log10()+
+  scale_fill_brewer(palette = "Set1")+
+  ylab("Risk of infection")+
+  scale_x_discrete(labels= c("Susceptible patient 1","Susceptible patient 2", "Susceptible patient 3", "Susceptible patient 4"))+
+  xlab("Suseptible pateints")+
+  theme(legend.position="none")
+plot(p)
+
+# a<-df() %>%
+# filter(name=="C3","C5","C7","C9")%>% 
+#   select(risk) %>%
+#   mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
+# 
+# #Calculate mean and sd of all values in the nested lists
+# ms <- function(a, col="NumInfected") {
+#   u <- unlist(a[[col]])
+#   return(data.frame(Mean=ceiling(mean(u)),SD=ceiling(sd(u))))
+# }
+# 
+# a<-ms(a)
+# 
+# z<-rbind(a,c(100-a$Mean,100-a$SD))
+# z<-z/100
+# z$Infected <-  as.factor(c("Infected", "Uninfected"))
+# data<-list(Infected=z$Mean[1], Possibly=z$SD[1],Uninfected=1-(z$Mean[1]+z$SD[1]) )
+# return(data)
+# 
+# 
+# wafflePlot<-
+#   w() %>%
+#   personograph( 
+#     n.icons=100, 
+#     dimensions=c(10,10), 
+#     plot.width=0.8,
+#     icon.style=2,
+#     colors=list(Uninfected="grey", Infected="blue",Possibly="orange"),
+#     force.fill = TRUE,
+#     fig.cap = "Number of additional infected patients per 100 (mean=blue, SD=orange)"
+#   )
+# 
+# wafflePlot
+
 
 
