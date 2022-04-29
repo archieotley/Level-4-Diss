@@ -251,42 +251,51 @@ plot(df)
 p1 <- ggplot(df, aes(y=risk,x=ach))+
   geom_point(aes(y=risk,x=ach),alpha=0.2)+
   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p2 <- ggplot(df, aes(y=risk,x=V))+
   geom_point(aes(y=risk,x=V),alpha=0.2)+
   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p3 <- ggplot(df, aes(y=risk,x=k))+
   geom_point(aes(y=risk,x=k),alpha=0.2)+
   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p4 <- ggplot(df, aes(y=risk,x=delay))+
   geom_point(aes(y=risk,x=delay),alpha=0.2)+
   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p5 <- ggplot(df, aes(y=risk,x=times_appt))+
   geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
   geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p6 <- ggplot(df, aes(y=risk,x=p))+
   geom_point(aes(y=risk,x=p),alpha=0.2)+
   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p7 <- ggplot(df, aes(y=risk,x=logE))+
   geom_point(aes(y=risk,x=logE),alpha=0.2)+
   geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
 
 p8 <- ggplot(df, aes(y=risk,x=lambda))+
   geom_point(aes(y=risk,x=lambda),alpha=0.2)+
   geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
+  ylim(c(0,0.025))+
   hrbrthemes::theme_ipsum()
+
 
 plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 4)
 
