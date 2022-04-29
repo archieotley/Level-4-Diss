@@ -40,12 +40,12 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=100
+N=500
 set.seed(42)
 times_appt<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
-k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
+k=runif(N,min = 50,max = 1000)#rep(1e-4,N)
 V =runif(N,min=10, max=40) 
 logE = truncdist::rtrunc(n = N , spec = "norm" ,a = 0 ,b = 6, mean=m, sd=s)
 p = ((CI[1]+runif(N)*CI[2]+runif(N))*0.001)/60 
@@ -237,7 +237,22 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   
   analyticalODE(times,0,V,lambda,out7$C[NROW(out8)])-> out9
   
-  tmp<-
+  tmp1<-
+    out3%>%
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k)))
+  
+  tmp2<-
+    out5%>%
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k)))
+  
+  tmp3<-
+    out7%>%
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k)))
+  
+  tmp4<-
     out9%>%
     summarise(dose=AUC(times,C*p))%>%
     mutate(risk=1-exp(-dose/as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
@@ -252,8 +267,8 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
                        C7=out7$C[NROW(out7)],
                        #C8=out8$C[NROW(out8)],
                        C9=out9$C[NROW(out9)],
-                       dose=tmp$dose,
-                       risk=tmp$risk
+                       dose=tmp1$dose+tmp2$dose+tmp3$dose+tmp4$dose,
+                       risk=tmp1$risk+tmp2$risk+tmp3$risk+tmp4$risk
   )
   
   return(exposure)

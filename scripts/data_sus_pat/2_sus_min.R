@@ -40,12 +40,12 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=500
+N=1000
 set.seed(42)
 times_appt<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
-k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
+k=runif(N,min = 50,max = 1000)#rep(1e-4,N)
 V =runif(N,min=10, max=40) 
 logE = truncdist::rtrunc(n = N , spec = "norm" ,a = 0 ,b = 6, mean=m, sd=s)
 p = ((CI[1]+runif(N)*CI[2]+runif(N))*0.001)/60 
@@ -76,7 +76,7 @@ numerical_ODE<-function(t, state, parameters) {
 analyticalODE <- function(times,E,V,lambda,C01){
   t=seq(0,NROW(times)-2) #need to convert from times seconds to 0-maxtime, to allow comparison with the ODE solver # problem if lambda is a function of time
   data.frame(times=t,
-             C=E/(V*lambda)*(1-exp(-lambda*(t*60)))+C01*exp(-lambda*(t*60)))
+             C=E/(V*lambda)*(1-exp(-lambda*(t)))+C01*exp(-lambda*(t)))
 }
 
 # AUC function (Area Under Curve) -------------------------------------------------------
@@ -89,8 +89,10 @@ AUC <- function(x,y){ #To allow for non-uniform time-steps
 
 
 # Exposure function -----------------------------------------------------
-exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
+exposure<-function(logE,p,ach,times, times_appt,delay,k,V,lambda){
   
+  H <- 2 ##### Number of iterations per minute selected here
+  Z <- 60/H
   E <- (10^(logE))/3600
   
   #Variable volume
@@ -99,10 +101,10 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   ####### Part 1 patient in the room
   
   t01=0
-  tend1= as.numeric(times_appt) #X * 60 X is time in mins, to give seconds
+  tend1= as.numeric(times_appt)*60 #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
-  #times<-seq(t01,tend1,by=1)
-  times <- mapply(":",t01,tend1)
+  
+  times <- seq(t01, tend1, by = Z)
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
@@ -112,9 +114,9 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   
   #Intial conditions
   t02=tend1
-  tend2= tend1 +as.numeric(delay); #X * 60 X is time in mins
-  #times<-seq(t02,tend2,by=1)
-  times <- mapply(":",t02,tend2)
+  tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
+  
+  times <- seq(t02, tend2, by = Z)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -128,10 +130,9 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t03=tend2
-  tend3= tend2 +as.numeric(times) #X * 60 X is time in mins
+  tend3= tend2 +as.numeric(times_appt)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  #times<-seq(t03,tend3,by=1)
-  times <- mapply(":",t03,tend3)
+  times <- seq(t03, tend3, by = Z)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -146,10 +147,9 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t04=tend3
-  tend4= tend3 +as.numeric(delay) #X * 60 X is time in mins
+  tend4= tend3 +as.numeric(delay)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  # times<-seq(t04,tend4,by=1)
-  times <- mapply(":",t04,tend4)
+  times <- seq(t04, tend4, by = Z)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -164,10 +164,9 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t05=tend4
-  tend5= tend4 +as.numeric(times_appt) #X * 60 X is time in mins
+  tend5= tend4 +as.numeric(times_appt)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
-  # times<-seq(t05,tend5,by=1)
-  times <- mapply(":",t05,tend5)
+  times <- seq(t05, tend5, by = Z)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -177,26 +176,60 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   
   analyticalODE(times,0,V,lambda,out4$C[NROW(out4)])-> out5
   
+  # ####### Part 6 2nd susceptible patient leaves room
+  # 
+  # #Intial conditions
+  # #E0=0
+  # t06=tend5
+  # tend6= tend5 +as.numeric(delay)*60 #X * 60 X is time in mins
+  # #tspan2=[t02 tend2]
+  # times <- seq(t06, tend6, by = Z)
+  # #C02=C1(end)    #takes the last concentration value form simulation 1
+  # #E0=0           #emission now 0
+  # 
+  # parameters<-c(0,V,lambda)
+  # init<-c(C=out5$C[NROW(out5)])
+  # #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
+  # 
+  # analyticalODE(times,0,V,lambda,out5$C[NROW(out5)])-> out6
+  # 
+  # ####### Part 6 2nd susceptible patient enters room
+  # 
+  # #Intial conditions
+  # #E0=0
+  # t07=tend6
+  # tend7= tend6 +as.numeric(times_appt)*60 #X * 60 X is time in mins
+  # #tspan2=[t02 tend2]
+  # times <- seq(t07, tend7, by = Z)
+  # #C02=C1(end)    #takes the last concentration value form simulation 1
+  # #E0=0           #emission now 0
+  # 
+  # parameters<-c(0,V,lambda)
+  # init<-c(C=out6$C[NROW(out6)])
+  # #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
+  # 
+  # analyticalODE(times,0,V,lambda,out6$C[NROW(out6)])-> out7
+  
   tmp1<-
     out3%>%
-    summarise(dose=AUC(times*60,C*p))%>%
-    mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k)))
   
   tmp2<-
     out5%>%
-    summarise(dose=AUC(times*60,C*p))%>%
-    mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
+    summarise(dose=AUC(times,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
   
   
-  exposure<-data.frame(C1=out1$C[NROW(out1)],
-                       C2=out2$C[NROW(out2)],
-                       C3=out3$C[NROW(out3)],
-                       C4=out4$C[NROW(out4)],
-                       C5=out5$C[NROW(out5)],
-                       dose=tmp1$dose,
-                       risk=tmp1$risk
-                       # dose=tmp2$dose,
-                       # risk=tmp2$risk
+  exposure<-data.frame(#C1=out1$C[NROW(out1)],
+    #C2=out2$C[NROW(out2)],
+    C3=out3$C[NROW(out3)],
+    #C4=out4$C[NROW(out4)],
+    C5=out5$C[NROW(out5)],
+    #C6=out6$C[NROW(out6)],
+    #C7=out7$C[NROW(out7)],
+    dose=tmp1$dose+tmp2$dose,
+    risk=tmp1$risk+tmp2$risk
   )
   
   return(exposure)
@@ -206,11 +239,12 @@ exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
 df=mcmapply(FUN = exposure,logE,p,ach,times,times_appt,delay,k,V,lambda,mc.cores = 1) %>%
   t()%>%
   as.data.frame() %>%
-  unnest(cols=c(C1, C2, C3, C4, C5, dose, risk))
+  unnest(cols=c( C3, C5,dose, risk))
+# unnest(cols=c(C1, C2, C3, C4, C5, C6, C7,dose, risk))
 #pivot_longer(!c(dose,risk))
 
 
-df=cbind(df,logE,p,ach,times,times_appt,delay,k,V,lambda)
+df=cbind(df,logE,p,ach,times, times_appt,delay,k,V,lambda)
 
 plot(df)
 
@@ -318,9 +352,9 @@ plot_grid(
 #   hrbrthemes::theme_ipsum()
 
 
-fit.lm=lm(data=df %>% select(-c(C1,C2,C3,C4,C5,risk)),log10(dose)~.)
+# fit.lm=lm(data=df %>% select(-c(C1,C2,C3,C4,C5,C6,C7,risk)),log10(dose)~.)
+fit.lm=lm(data=df %>% select(-c(C3,C5,risk)),log10(dose)~.)
 plot(fit.lm)
-
 
 
 broom::tidy(fit.lm)
