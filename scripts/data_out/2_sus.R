@@ -42,7 +42,7 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 N=5
 set.seed(42)
-times<-runif(N,min = 10,max = 120)
+times_appt<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
 delay=runif(N,min = 1,max = 30)
 k=runif(N,min = 1e-4,max = 1e-3)#rep(1e-4,N)
@@ -89,7 +89,7 @@ AUC <- function(x,y){ #To allow for non-uniform time-steps
 
 
 # Exposure function -----------------------------------------------------
-exposure<-function(logE,p,ach,times,delay,k,V,lambda){
+exposure<-function(logE,p,ach,times,times_appt,delay,k,V,lambda){
   
   E <- (10^(logE))/3600
   
@@ -99,9 +99,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   ####### Part 1 patient in the room
   
   t01=0
-  tend1= as.numeric(times)*60 #X * 60 X is time in mins, to give seconds
+  tend1= as.numeric(times_appt)*60 #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
-  
+  #times<-seq(t01,tend1,by=1)
   times <- mapply(":",t01,tend1)
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
@@ -113,7 +113,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   t02=tend1
   tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
-  
+  #times<-seq(t02,tend2,by=1)
   times <- mapply(":",t02,tend2)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
@@ -130,6 +130,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   t03=tend2
   tend3= tend2 +as.numeric(times)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
+  #times<-seq(t03,tend3,by=1)
   times <- mapply(":",t03,tend3)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
@@ -147,6 +148,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   t04=tend3
   tend4= tend3 +as.numeric(delay)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
+  # times<-seq(t04,tend4,by=1)
   times <- mapply(":",t04,tend4)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
@@ -162,8 +164,9 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t05=tend4
-  tend5= tend4 +as.numeric(times)*60 #X * 60 X is time in mins
+  tend5= tend4 +as.numeric(times_appt)*60 #X * 60 X is time in mins
   #tspan2=[t02 tend2]
+  # times<-seq(t05,tend5,by=1)
   times <- mapply(":",t05,tend5)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
@@ -191,7 +194,7 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
                        C4=out4$C[NROW(out4)],
                        C5=out5$C[NROW(out5)],
                        dose=tmp1$dose,
-                       risk=tmp1$risk,
+                       risk=tmp1$risk
                        # dose=tmp2$dose,
                        # risk=tmp2$risk
   )
@@ -200,14 +203,14 @@ exposure<-function(logE,p,ach,times,delay,k,V,lambda){
   
 }
 
-df=mcmapply(FUN = exposure,logE,p,ach,times,delay,k,V,lambda,mc.cores = 1) %>%
+df=mcmapply(FUN = exposure,logE,p,ach,times,times_appt,delay,k,V,lambda,mc.cores = 1) %>%
   t()%>%
   as.data.frame() %>%
   unnest(cols=c(C1, C2, C3, C4, C5, dose, risk))
 #pivot_longer(!c(dose,risk))
 
 
-df=cbind(df,logE,p,ach,times,delay,k,V,lambda)
+df=cbind(df,logE,p,ach,times,times_appt,delay,k,V,lambda)
 
 plot(df)
 
@@ -231,9 +234,9 @@ p4 <- ggplot(df, aes(y=risk,x=delay))+
   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
   hrbrthemes::theme_ipsum()
 
-p5 <- ggplot(df, aes(y=risk,x=times))+
-  geom_point(aes(y=risk,x=times),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=times),alpha=0.2,method="lm")+
+p5 <- ggplot(df, aes(y=risk,x=times_appt))+
+  geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
   hrbrthemes::theme_ipsum()
 
 p6 <- ggplot(df, aes(y=risk,x=p))+
