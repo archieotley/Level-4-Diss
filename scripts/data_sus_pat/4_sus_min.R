@@ -40,7 +40,7 @@ CI = meanp + ts*SEM                     # Confidence Intervals
 
 ####### Inputs manually chosen
 
-N=100
+N=1000
 set.seed(42)
 times_appt<-runif(N,min = 10,max = 120)
 ach=runif(N,min = 0.1,max = 6)
@@ -291,48 +291,64 @@ p1 <- ggplot(df, aes(y=risk,x=ach))+
   geom_point(aes(y=risk,x=ach),alpha=0.2)+
   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("ACH")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p2 <- ggplot(df, aes(y=risk,x=V))+
   geom_point(aes(y=risk,x=V),alpha=0.2)+
   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("room volume in m^3")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p3 <- ggplot(df, aes(y=risk,x=k))+
   geom_point(aes(y=risk,x=k),alpha=0.2)+
   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("k value")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p4 <- ggplot(df, aes(y=risk,x=delay))+
   geom_point(aes(y=risk,x=delay),alpha=0.2)+
   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("Fallow time in Minutes")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p5 <- ggplot(df, aes(y=risk,x=times_appt))+
   geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
   geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("Appointment lebth in Minutes")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p6 <- ggplot(df, aes(y=risk,x=p))+
   geom_point(aes(y=risk,x=p),alpha=0.2)+
   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("Breathing rate in Litres per minute")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p7 <- ggplot(df, aes(y=risk,x=logE))+
   geom_point(aes(y=risk,x=logE),alpha=0.2)+
   geom_smooth(aes(y=risk,x=logE),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("Contaminant Emission rate in m^3s^-1")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 p8 <- ggplot(df, aes(y=risk,x=lambda))+
   geom_point(aes(y=risk,x=lambda),alpha=0.2)+
   geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
   ylim(c(0,0.025))+
+  xlab("loss rate of Contaminant in s^-1")+
+  ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
 
 plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 4)
@@ -368,18 +384,18 @@ broom::tidy(fit.lm)
 
 p <- ggplot(df, aes(x=name, y=risk, fill=name)) + 
   geom_violin()
+p
 
-
-p <- 
-  ggplot(df, aes(y=risk,x=name,fill=name))+
-  geom_violin(draw_quantiles = c(0.25,0.5,0.75))+
-  scale_y_log10()+
-  scale_fill_brewer(palette = "Set1")+
-  ylab("Risk of infection")+
-  scale_x_discrete(labels= c("Susceptible patient 1","Susceptible patient 2", "Susceptible patient 3", "Susceptible patient 4"))+
-  xlab("Suseptible pateints")+
-  theme(legend.position="none")
-plot(p)
+# p <- 
+#   ggplot(df, aes(y=risk,x=name,fill=name))+
+#   geom_violin(draw_quantiles = c(0.25,0.5,0.75))+
+#   scale_y_log10()+
+#   scale_fill_brewer(palette = "Set1")+
+#   ylab("Risk of infection")+
+#   scale_x_discrete(labels= c("Susceptible patient 1","Susceptible patient 2", "Susceptible patient 3", "Susceptible patient 4"))+
+#   xlab("Suseptible pateints")+
+#   theme(legend.position="none")
+# p
 
 # a<-df() %>%
 # filter(name=="C3","C5","C7","C9")%>% 
