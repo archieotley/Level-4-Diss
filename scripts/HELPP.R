@@ -93,10 +93,9 @@ AUC <- function(x,y){ #To allow for non-uniform time-steps
 
 
 # Exposure function -----------------------------------------------------
-exposure<-function(E,p,ach,times, times_appt,delay,k,V,lambda){
+exposure<-function(E,p,ach,times,times_appt,delay,k,V,lambda){
+  Z <- 30
   
-  H <- 2 ##### Number of iterations per minute selected here
-  Z <- 60/H
   
   #Variable volume
   #area from all room sizes
@@ -107,7 +106,9 @@ exposure<-function(E,p,ach,times, times_appt,delay,k,V,lambda){
   tend1= as.numeric(times_appt)*60 #X * 60 X is time in mins, to give seconds
   C01=0   #assume no intial concentration of CFU in the air
   
+  #times<-seq(t01,tend1,by=1)
   times <- seq(t01, tend1, by = Z)
+  #times <- mapply(":",t01,tend1)
   parameters<-c(E,V,lambda)
   init<-c(C=C01)
   
@@ -119,7 +120,9 @@ exposure<-function(E,p,ach,times, times_appt,delay,k,V,lambda){
   t02=tend1
   tend2= tend1 +(as.numeric(delay)*60); #X * 60 X is time in mins
   
+  #times<-seq(t02,tend2,by=1)
   times <- seq(t02, tend2, by = Z)
+  #times <- mapply(":",t02,tend2)
   #C02=C1(end)    #takes the last concentration value form simulation 1
   #E0=0           #emission now 0
   
@@ -133,32 +136,31 @@ exposure<-function(E,p,ach,times, times_appt,delay,k,V,lambda){
   #Intial conditions
   #E0=0
   t03=tend2
-  tend3= tend2 +as.numeric(times_appt)*60 #X * 60 X is time in mins
-  #tspan2=[t02 tend2]
+  tend3= tend2 +as.numeric(times_appt)*60; #X * 60 X is time in mins
+  #times<-seq(t03,tend3,by=1)
   times <- seq(t03, tend3, by = Z)
-  #C02=C1(end)    #takes the last concentration value form simulation 1
+  #times <- mapply(":",t03,tend3)
   #E0=0           #emission now 0
   
   parameters<-c(0,V,lambda)
   init<-c(C=out2$C[NROW(out2)])
-  #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
   
   analyticalODE(times,0,V,lambda,out2$C[NROW(out2)])-> out3
   
-  
   tmp1<-
     out3%>%
-    summarise(dose=AUC(times,C*p))%>%
-    mutate(risk=1-exp(-dose/as.numeric(k)))
+    summarise(dose=AUC(times*60,C*p))%>%
+    mutate(risk=1-exp(-dose/as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
   
+  # tmp2<-
+  #   out5%>%
+  #   summarise(dose=AUC(times,C*p))%>%
+  #   mutate(risk=1-exp(-dose*as.numeric(k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
   
   
   exposure<-data.frame(#C1=out1$C[NROW(out1)],
     #C2=out2$C[NROW(out2)],
     C3=out3$C[NROW(out3)],
-    #C4=out4$C[NROW(out4)],
-    #C6=out6$C[NROW(out6)],
-    #C7=out7$C[NROW(out7)],
     dose=tmp1$dose,
     risk=tmp1$risk
   )
@@ -170,19 +172,21 @@ exposure<-function(E,p,ach,times, times_appt,delay,k,V,lambda){
 df=mcmapply(FUN = exposure,E,p,ach,times,times_appt,delay,k,V,lambda,mc.cores = 1) %>%
   t()%>%
   as.data.frame() %>%
-  unnest(cols=c( C3,dose, risk))
-# unnest(cols=c(C1, C2, C3, C4, C5, C6, C7,dose, risk))
+  unnest(cols=c( C3, dose, risk))
+# unnest(cols=c(C1, C2, C3, dose, risk))
 #pivot_longer(!c(dose,risk))
 
+df=cbind(df,E,p,ach,times,times_appt,delay,k,V,lambda)
 
-df=cbind(df,E,p,ach,times, times_appt,delay,k,V,lambda)
+# write.csv(df,"C:\\Users\\Ron\\Desktop\\Test\\People.csv", row.names = FALSE)
+
 
 plot(df)
 
 p1 <- ggplot(df, aes(y=risk,x=ach))+
   geom_point(aes(y=risk,x=ach),alpha=0.2)+
   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("ACH")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -190,7 +194,7 @@ p1 <- ggplot(df, aes(y=risk,x=ach))+
 p2 <- ggplot(df, aes(y=risk,x=V))+
   geom_point(aes(y=risk,x=V),alpha=0.2)+
   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("room volume in m^3")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -198,7 +202,7 @@ p2 <- ggplot(df, aes(y=risk,x=V))+
 p3 <- ggplot(df, aes(y=risk,x=k))+
   geom_point(aes(y=risk,x=k),alpha=0.2)+
   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("k value")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -206,7 +210,7 @@ p3 <- ggplot(df, aes(y=risk,x=k))+
 p4 <- ggplot(df, aes(y=risk,x=delay))+
   geom_point(aes(y=risk,x=delay),alpha=0.2)+
   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("Fallow time in Minutes")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -214,7 +218,7 @@ p4 <- ggplot(df, aes(y=risk,x=delay))+
 p5 <- ggplot(df, aes(y=risk,x=times_appt))+
   geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
   geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("Appointment lebth in Minutes")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -222,7 +226,7 @@ p5 <- ggplot(df, aes(y=risk,x=times_appt))+
 p6 <- ggplot(df, aes(y=risk,x=p))+
   geom_point(aes(y=risk,x=p),alpha=0.2)+
   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.5))+
   xlab("Breathing rate in m^3s^-1")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -230,7 +234,7 @@ p6 <- ggplot(df, aes(y=risk,x=p))+
 p7 <- ggplot(df, aes(y=risk,x=E))+
   geom_point(aes(y=risk,x=E),alpha=0.2)+
   geom_smooth(aes(y=risk,x=E),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("Contaminant Emission rate in qs^-1")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
@@ -238,10 +242,11 @@ p7 <- ggplot(df, aes(y=risk,x=E))+
 p8 <- ggplot(df, aes(y=risk,x=lambda))+
   geom_point(aes(y=risk,x=lambda),alpha=0.2)+
   geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
+  ylim(c(0,0.05))+
   xlab("loss rate of Contaminant in s^-1")+
   ylab("Cumulative risk")+
   hrbrthemes::theme_ipsum()
+
 
 plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 4)
 
@@ -266,7 +271,8 @@ plot_grid(
 
 
 
-# fit.lm=lm(data=df %>% select(-c(C1,C2,C3,C4,C5,C6,C7,risk)),log10(dose)~.)
+
+# fit.lm=lm(data=df %>% select(-c(C1,C2,C3,risk)),log10(dose)~.)
 fit.lm=lm(data=df %>% select(-c(C3,risk)),log10(dose)~.)
 plot(fit.lm)
 
