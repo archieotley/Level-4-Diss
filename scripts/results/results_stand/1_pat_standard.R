@@ -199,14 +199,14 @@ plot(df)
 
 # newdata <- df[1:3,]
 
-# df2 <- c("C3", "dose", "risk")
-# newdata <- df[df2]
-# 
-# 
-# df1<-cbind((E/max(E)),(p/max(p)),(ach/max(ach)),(times/max(times)),(times_appt/max(times_appt)),(delay/max(delay)),(k/max(k)),(V/max(V)),(lambda/max(lambda)))
-# colnames(df1) <- c('E/max(E)','p/max(p)','ach/max(ach)','times/max(times)','times_appt/max(times_appt','delay/max(delay)','k/max(k)','V/max(v)','lambda/max(lambda)')
-# 
-# everything <-cbind(newdata, df1)
+df2 <- c("C3", "dose", "risk")
+newdata <- df[df2]
+
+
+df1<-cbind((E/max(E)),(p/max(p)),(ach/max(ach)),(times/max(times)),(times_appt/max(times_appt)),(delay/max(delay)),(k/max(k)),(V/max(V)),(lambda/max(lambda)))
+colnames(df1) <- c('E/max(E)','p/max(p)','ach/max(ach)','times/max(times)','times_appt/max(times_appt','delay/max(delay)','k/max(k)','V/max(v)','lambda/max(lambda)')
+
+everything <-cbind(newdata, df1)
 
 # total <- merge(newdata,df1) #,by=c("dose","risk","C3","(E/max(E))","(p/max(p))","(ach/max(ach))","(times/max(times))","(times_appt/max(times_appt))","(delay/max(delay))","(k/max(k))","(V/max(V))","(lambda/max(lambda))"))
 
@@ -218,133 +218,133 @@ plot(df)
 
 #plot(df1)
 
-p1 <- ggplot(df, aes(y=risk,x=ach))+
-  geom_point(aes(y=risk,x=ach),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("ACH")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p2 <- ggplot(df, aes(y=risk,x=V))+
-  geom_point(aes(y=risk,x=V),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("room volume in m^3")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p3 <- ggplot(df, aes(y=risk,x=k))+
-  geom_point(aes(y=risk,x=k),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("k value")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p4 <- ggplot(df, aes(y=risk,x=delay))+
-  geom_point(aes(y=risk,x=delay),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("Fallow time in Minutes")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p5 <- ggplot(df, aes(y=risk,x=times_appt))+
-  geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("Appointment lebth in Minutes")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p6 <- ggplot(df, aes(y=risk,x=p))+
-  geom_point(aes(y=risk,x=p),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("Breathing rate in m^3s^-1")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p7 <- ggplot(df, aes(y=risk,x=E))+
-  geom_point(aes(y=risk,x=E),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=E),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("Contaminant Emission rate in qs^-1")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-p8 <- ggplot(df, aes(y=risk,x=lambda))+
-  geom_point(aes(y=risk,x=lambda),alpha=0.2)+
-  geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
-  ylim(c(0,0.01))+
-  xlab("loss rate of Contaminant in s^-1")+
-  ylab("Cumulative risk")+
-  hrbrthemes::theme_ipsum()
-
-# p1 <- ggplot(df, aes(y=risk,x=(ach/max(ach))))+
-#   geom_point(aes(y=risk,x=(ach/max(ach))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(ach/max(ach))),alpha=0.2,method="lm")+
+# p1 <- ggplot(df, aes(y=risk,x=ach))+
+#   geom_point(aes(y=risk,x=ach),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=ach),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("ACH standardized")+
+#   xlab("ACH")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p2 <- ggplot(df, aes(y=risk,x=(V/max(V))))+
-#   geom_point(aes(y=risk,x=(V/max(V))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(V/max(V))),alpha=0.2,method="lm")+
+# p2 <- ggplot(df, aes(y=risk,x=V))+
+#   geom_point(aes(y=risk,x=V),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=V),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("room volume standardized")+
+#   xlab("room volume in m^3")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p3 <- ggplot(df, aes(y=risk,x=(k/max(k))))+
-#   geom_point(aes(y=risk,x=(k/max(k))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(k/max(k))),alpha=0.2,method="lm")+
+# p3 <- ggplot(df, aes(y=risk,x=k))+
+#   geom_point(aes(y=risk,x=k),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=k),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("k value standardized")+
+#   xlab("k value")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p4 <- ggplot(df, aes(y=risk,x=(delay/max(delay))))+
-#   geom_point(aes(y=risk,x=(delay/max(delay))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(delay/max(delay))),alpha=0.2,method="lm")+
+# p4 <- ggplot(df, aes(y=risk,x=delay))+
+#   geom_point(aes(y=risk,x=delay),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=delay),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("Fallow time standardized")+
+#   xlab("Fallow time in Minutes")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p5 <- ggplot(df, aes(y=risk,x=(times_appt/max(times_appt))))+
-#   geom_point(aes(y=risk,x=(times_appt/max(times_appt))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(times_appt/max(times_appt))),alpha=0.2,method="lm")+
+# p5 <- ggplot(df, aes(y=risk,x=times_appt))+
+#   geom_point(aes(y=risk,x=times_appt),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=times_appt),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("Appointment lenth standardized")+
+#   xlab("Appointment lebth in Minutes")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p6 <- ggplot(df, aes(y=risk,x=(p/max(p))))+
-#   geom_point(aes(y=risk,x=(p/max(p))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(p/max(p))),alpha=0.2,method="lm")+
+# p6 <- ggplot(df, aes(y=risk,x=p))+
+#   geom_point(aes(y=risk,x=p),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=p),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("Breathing rate standardized")+
+#   xlab("Breathing rate in m^3s^-1")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p7 <- ggplot(df, aes(y=risk,x=(E/max(E))))+
-#   geom_point(aes(y=risk,x=(E/max(E))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(E/max(E))),alpha=0.2,method="lm")+
+# p7 <- ggplot(df, aes(y=risk,x=E))+
+#   geom_point(aes(y=risk,x=E),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=E),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("Contaminant Emission rate standardized")+
+#   xlab("Contaminant Emission rate in qs^-1")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
 # 
-# p8 <- ggplot(df, aes(y=risk,x=(lambda/max(lambda))))+
-#   geom_point(aes(y=risk,x=(lambda/max(lambda))),alpha=0.2)+
-#   geom_smooth(aes(y=risk,x=(lambda/max(lambda))),alpha=0.2,method="lm")+
+# p8 <- ggplot(df, aes(y=risk,x=lambda))+
+#   geom_point(aes(y=risk,x=lambda),alpha=0.2)+
+#   geom_smooth(aes(y=risk,x=lambda),alpha=0.2,method="lm")+
 #   ylim(c(0,0.01))+
-#   xlab("loss rate of Contaminant standardized")+
+#   xlab("loss rate of Contaminant in s^-1")+
 #   ylab("Cumulative risk")+
 #   hrbrthemes::theme_ipsum()
+
+p1 <- ggplot(df, aes(y=risk,x=(ach/max(ach))))+
+  geom_point(aes(y=risk,x=(ach/max(ach))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(ach/max(ach))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("ACH standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p2 <- ggplot(df, aes(y=risk,x=(V/max(V))))+
+  geom_point(aes(y=risk,x=(V/max(V))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(V/max(V))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("room volume standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p3 <- ggplot(df, aes(y=risk,x=(k/max(k))))+
+  geom_point(aes(y=risk,x=(k/max(k))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(k/max(k))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("k value standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p4 <- ggplot(df, aes(y=risk,x=(delay/max(delay))))+
+  geom_point(aes(y=risk,x=(delay/max(delay))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(delay/max(delay))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("Fallow time standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p5 <- ggplot(df, aes(y=risk,x=(times_appt/max(times_appt))))+
+  geom_point(aes(y=risk,x=(times_appt/max(times_appt))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(times_appt/max(times_appt))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("Appointment lenth standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p6 <- ggplot(df, aes(y=risk,x=(p/max(p))))+
+  geom_point(aes(y=risk,x=(p/max(p))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(p/max(p))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("Breathing rate standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p7 <- ggplot(df, aes(y=risk,x=(E/max(E))))+
+  geom_point(aes(y=risk,x=(E/max(E))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(E/max(E))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("Contaminant Emission rate standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
+
+p8 <- ggplot(df, aes(y=risk,x=(lambda/max(lambda))))+
+  geom_point(aes(y=risk,x=(lambda/max(lambda))),alpha=0.2)+
+  geom_smooth(aes(y=risk,x=(lambda/max(lambda))),alpha=0.2,method="lm")+
+  ylim(c(0,0.01))+
+  xlab("loss rate of Contaminant standardized")+
+  ylab("Cumulative risk")+
+  hrbrthemes::theme_ipsum()
 
 plot_row <- plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, ncol = 4)
 
@@ -371,11 +371,11 @@ plot_grid(
 
 # fit.lm=lm(data=df %>% select(-c(C1,C2,C3,C4,C5,C6,C7,risk)),log10(dose)~.)
 
- fit.lm=lm(data=df %>% select(-c(C3,risk)),log10(dose)~.)
+# fit.lm=lm(data=df %>% select(-c(C3,risk)),log10(dose)~.)
 
 # fit.lm=lm(data=(c(df,df$risk,df$C3,df$dose)) %>% select(-c(C3,risk)),log10(dose)~.)
 
-# fit.lm=lm(data=everything %>% select(-c(C3,risk)),log10(dose)~.)
+fit.lm=lm(data=everything %>% select(-c(C3,risk)),log10(dose)~.)
 plot(fit.lm)
 
 
