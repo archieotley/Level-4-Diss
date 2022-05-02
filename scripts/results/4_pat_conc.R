@@ -320,7 +320,7 @@ broom::tidy(fit.lm)
 #   geom_violin()
 # p
 p9 <- ggplot(df, aes(x=C3, y=risk3)) + 
-  # ylim(c(0,0.01))+
+   ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   #xlim(c())+
   xlab("Patient 1")+
@@ -328,21 +328,21 @@ p9 <- ggplot(df, aes(x=C3, y=risk3)) +
   geom_violin()
 
 p10 <- ggplot(df, aes(x=C5, y=risk5)) + 
-  # ylim(c(0,0.01))+
+   ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 2")+
   ylab("Risk of Infection")+
   geom_violin()
 
 p11 <- ggplot(df, aes(x=C7, y=risk7)) + 
-  # ylim(c(0,0.01))+
+   ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 3")+
   ylab("Risk of Infection")+
   geom_violin()
 
 p12 <- ggplot(df, aes(x=C9, y=risk9)) + 
-  # ylim(c(0,0.01))+
+   ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 4")+
   ylab("Risk of Infection")+
