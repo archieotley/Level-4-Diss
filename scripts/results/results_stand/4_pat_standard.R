@@ -295,7 +295,7 @@ newdata <- df[df2]
 
 
 df1<-cbind((E/max(E)),(p/max(p)),(ach/max(ach)),(times/max(times)),(times_appt/max(times_appt)),(delay/max(delay)),(k/max(k)),(V/max(V)),(lambda/max(lambda)))
-colnames(df1) <- c('E/max(E)','p/max(p)','ach/max(ach)','times/max(times)','times_appt/max(times_appt','delay/max(delay)','k/max(k)','V/max(v)','lambda/max(lambda)')
+colnames(df1) <- c('E/max(E)','p/max(p)','ach/max(ach)','times/max(times)','times_appt/max(times_appt)','delay/max(delay)','k/max(k)','V/max(v)','lambda/max(lambda)')
 
 everything <-cbind(newdata, df1)
 
