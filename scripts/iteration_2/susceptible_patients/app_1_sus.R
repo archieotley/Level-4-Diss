@@ -311,42 +311,7 @@ server <- function(input, output) {
     #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
     
     analyticalODE(times,0,V,lambda,out2$C[NROW(out2)])-> out3
-    
-    #AGO##################################### Part 4 susceptible patient enters room and breaths in CFU
-    
-    #Intial conditions
-    #E0=0
-    t04=tend3
-    tend4= tend3 +as.numeric(input$times)*60 #X * 60 X is time in mins
-    #tspan2=[t02 tend2]
-    times <- seq(t04, tend4, by = 1)
-    #C02=C1(end)    #takes the last concentration value form simulation 1
-    #E0=0           #emission now 0
-    
-    parameters<-c(0,V,lambda)
-    init<-c(C=out3$C[NROW(out3)])
-    #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
-    
-    analyticalODE(times,0,V,lambda,out3$C[NROW(out3)])-> out4
-    
-    #AGO#########################################################################
-    
-    #AGO##################################### Part 5 susceptible patient enters room and breaths in CFU
-    
-    #Intial conditions
-    #E0=0
-    t05=tend4
-    tend5= tend4 +as.numeric(input$times)*60 #X * 60 X is time in mins
-    #tspan2=[t02 tend2]
-    times <- seq(t05, tend5, by = 1)
-    #C02=C1(end)    #takes the last concentration value form simulation 1
-    #E0=0           #emission now 0
-    
-    parameters<-c(0,V,lambda)
-    init<-c(C=out4$C[NROW(out4)])
-    #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
-    
-    analyticalODE(times,0,V,lambda,out4$C[NROW(out4)])-> out5
+  
     
     #AGO#########################################################################
     
@@ -367,7 +332,7 @@ server <- function(input, output) {
     #AGOreturn(n_result)
     
     tmp<-
-      out5%>%
+      out3%>%
       summarise(dose=AUC(times,C*p))%>%
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
@@ -375,8 +340,6 @@ server <- function(input, output) {
     n_result<-data.frame(C1=out1$C[NROW(out1)],
                          C2=out2$C[NROW(out2)],
                          C3=out3$C[NROW(out3)],
-                         C4=out4$C[NROW(out4)],
-                         C5=out5$C[NROW(out5)],
                          dose=tmp$dose,
                          risk=tmp$risk
     )
@@ -395,7 +358,7 @@ server <- function(input, output) {
   #AGO return(a)
   #AGO})
   res<-eventReactive(input$go,{
-    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, C4, C5, dose, risk))%>%pivot_longer(!c(dose,risk))
+    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, dose, risk))%>%pivot_longer(!c(dose,risk))
     return(a)
   })
   #### Believe currently getting total risk for all patients, change this to be for just 1 and see what happens
@@ -417,12 +380,12 @@ server <- function(input, output) {
       #scale_fill_ipsum() +
       scale_fill_brewer(palette = "Set1")+
       ylab("Final airborne concentration [cfu/m3]")+
-      scale_x_discrete(labels= c("Infectious Patient","Susceptible patient 1", "Susceptible patient 2","Susceptible patient 3","Susceptible patient 4"))+
+      scale_x_discrete(labels= c("Infectious Patient","Fallow time", "Susceptible patient 1"))+
       xlab("")+
       labs(
         title="Airborne concentration",
         subtitle="Comparison between patient sessions",
-        caption="1st patient is infecitous, 2nd, 3rd, 4th and 5th patients are susceptible"
+        caption="1st patient is infecitous, 2nd,3rd and 4th patients are susceptible"
       ) +
       theme(legend.position="none")
     
@@ -465,7 +428,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C5")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+      filter(name=="C2")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     

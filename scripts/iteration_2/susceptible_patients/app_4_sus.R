@@ -531,7 +531,7 @@ server <- function(input, output) {
       #scale_fill_ipsum() +
       scale_fill_brewer(palette = "Set1")+
       ylab("Final airborne concentration [cfu/m3]")+
-      scale_x_discrete(labels= c("Infectious Patient","Susceptible patient 1", "Susceptible patient 2","Susceptible patient 3","Susceptible patient 4","Susceptible patient 5","Susceptible patient 6","Susceptible patient 7","Susceptible patient 8"))+
+      scale_x_discrete(labels= c("Infectious Patient","Fallow time", "Susceptible patient 1","Fallow time","Susceptible patient 2","fallow time","Susceptiple patient 3","Fallow time","Susceptible patient 4"))+
       xlab("")+
       labs(
         title="Airborne concentration",

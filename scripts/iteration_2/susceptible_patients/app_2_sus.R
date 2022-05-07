@@ -350,42 +350,6 @@ server <- function(input, output) {
     
     #AGO#########################################################################
     
-    #AGO##################################### Part 6 susceptible patient enters room and breaths in CFU
-    
-    #Intial conditions
-    #E0=0
-    t06=tend5
-    tend6= tend5 +as.numeric(input$times)*60 #X * 60 X is time in mins
-    #tspan2=[t02 tend2]
-    times <- seq(t06, tend6, by = 1)
-    #C02=C1(end)    #takes the last concentration value form simulation 1
-    #E0=0           #emission now 0
-    
-    parameters<-c(0,V,lambda)
-    init<-c(C=out5$C[NROW(out5)])
-    #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
-    
-    analyticalODE(times,0,V,lambda,out5$C[NROW(out5)])-> out6
-    
-    #AGO#########################################################################
-    #AGO##################################### Part 7 susceptible patient enters room and breaths in CFU
-    
-    #Intial conditions
-    #E0=0
-    t07=tend6
-    tend7= tend6 +as.numeric(input$times)*60 #X * 60 X is time in mins
-    #tspan2=[t02 tend2]
-    times <- seq(t07, tend7, by = 1)
-    #C02=C1(end)    #takes the last concentration value form simulation 1
-    #E0=0           #emission now 0
-    
-    parameters<-c(0,V,lambda)
-    init<-c(C=out6$C[NROW(out6)])
-    #out3 <- deSolve::lsoda(init, times = times, func = numerical_ODE, parms = parameters)%>% as_tibble()
-    
-    analyticalODE(times,0,V,lambda,out6$C[NROW(out6)])-> out7
-    
-    #AGO#########################################################################
     #for the AUC function
     #Inhaled particles
     #AGO tmp<-
@@ -403,7 +367,7 @@ server <- function(input, output) {
     #AGOreturn(n_result)
     
     tmp<-
-      out7%>%
+      out5%>%
       summarise(dose=AUC(times,C*p))%>%
       mutate(risk=1-exp(-dose*as.numeric(input$k))) #Note the multiplication instead of division, this is because of how the dose-response parameter is given
     
@@ -413,8 +377,6 @@ server <- function(input, output) {
                          C3=out3$C[NROW(out3)],
                          C4=out4$C[NROW(out4)],
                          C5=out5$C[NROW(out5)],
-                         C6=out6$C[NROW(out6)],
-                         C7=out7$C[NROW(out7)],
                          dose=tmp$dose,
                          risk=tmp$risk
     )
@@ -433,7 +395,7 @@ server <- function(input, output) {
   #AGO return(a)
   #AGO})
   res<-eventReactive(input$go,{
-    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, C4, C5, C6, C7, dose, risk))%>%pivot_longer(!c(dose,risk))
+    a<-mcmapply(FUN = exposure,logE,p,as.numeric(input$ach),as.numeric(input$times),as.numeric(input$delay),mc.cores = 1)%>%t()%>%as.data.frame() %>% unnest(cols=c(C1, C2, C3, C4, C5, dose, risk))%>%pivot_longer(!c(dose,risk))
     return(a)
   })
   #### Believe currently getting total risk for all patients, change this to be for just 1 and see what happens
@@ -455,12 +417,12 @@ server <- function(input, output) {
       #scale_fill_ipsum() +
       scale_fill_brewer(palette = "Set1")+
       ylab("Final airborne concentration [cfu/m3]")+
-      scale_x_discrete(labels= c("Infectious Patient","Susceptible patient 1", "Susceptible patient 2","Susceptible patient 3","Susceptible patient 4","Susceptible patient 5","Susceptible patient 6"))+
+      scale_x_discrete(labels= c("Infectious Patient","Fallow time", "Susceptible patient 1","Fallow time","Susceptible patient 2"))+
       xlab("")+
       labs(
         title="Airborne concentration",
         subtitle="Comparison between patient sessions",
-        caption="1st patient is infecitous, 2nd, 3rd, 4th, 5th and 7th patients are susceptible"
+        caption="1st patient is infecitous, 2nd, 3rd, 4th and 5th patients are susceptible"
       ) +
       theme(legend.position="none")
     
@@ -503,7 +465,7 @@ server <- function(input, output) {
   
   w <- reactive({
     a<-res() %>%
-      filter(name=="C7")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
+      filter(name=="C5")%>% #AGO (changed C1 to C4) Choose any patient otherwise you're triplicating the subsequent calculations
       select(risk) %>%
       mutate(NumInfected = list(rbinom(n=100, size = 100, prob = risk)))
     
