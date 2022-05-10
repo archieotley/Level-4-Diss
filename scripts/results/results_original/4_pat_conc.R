@@ -325,28 +325,32 @@ p9 <- ggplot(df, aes(x=C3, y=risk3)) +
   #xlim(c())+
   xlab("Patient 1")+
   ylab("Risk of Infection")+
-  geom_violin()
+  geom_violin()+
+  hrbrthemes::theme_ipsum()
 
 p10 <- ggplot(df, aes(x=C5, y=risk5)) + 
    ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 2")+
   ylab("Risk of Infection")+
-  geom_violin()
+  geom_violin()+
+  hrbrthemes::theme_ipsum()
 
 p11 <- ggplot(df, aes(x=C7, y=risk7)) + 
    ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 3")+
   ylab("Risk of Infection")+
-  geom_violin()
+  geom_violin()+
+  hrbrthemes::theme_ipsum()
 
 p12 <- ggplot(df, aes(x=C9, y=risk9)) + 
    ylim(c(0,0.00225))+
   # xlim(c(0,20))+
   xlab("Patient 4")+
   ylab("Risk of Infection")+
-  geom_violin()
+  geom_violin()+
+  hrbrthemes::theme_ipsum()
 
 plot_row2 <- plot_grid(p9, p10, p11, p12, ncol = 2)
 
